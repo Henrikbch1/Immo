@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🐱 Kitty Jump &amp; Run</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="ui-overlay">
+    <div id="start-screen" class="screen active">
+      <h1>🐱 Kitty Jump &amp; Run</h1>
+      <p>Weiche den Hindernissen aus und sammle Fische!</p>
+
+      <div class="stats-row">
+        <div class="stat-badge">🏆 Highscore: <span id="best-score">0</span></div>
+        <div class="stat-badge">🐟 Gesamt: <span id="total-fish-display">0</span></div>
+      </div>
+
+      <div class="skin-label">Wähle deinen Skin:</div>
+      <div id="skin-selector">
+        <button class="skin-btn active" data-skin="0" title="Orange Katze">
+          <canvas class="skin-preview" width="52" height="52" data-skin="0"></canvas>
+          <span>Orange</span>
+        </button>
+        <button class="skin-btn" data-skin="1" title="Silber Katze">
+          <canvas class="skin-preview" width="52" height="52" data-skin="1"></canvas>
+          <div class="lock-overlay" id="lock-1">🔒<br><small>50 🐟</small></div>
+          <span>Silber</span>
+        </button>
+        <button class="skin-btn" data-skin="2" title="Schwarze Katze">
+          <canvas class="skin-preview" width="52" height="52" data-skin="2"></canvas>
+          <div class="lock-overlay" id="lock-2">🔒<br><small>150 🐟</small></div>
+          <span>Schwarz</span>
+        </button>
+        <button class="skin-btn" data-skin="3" title="Rosa Katze">
+          <canvas class="skin-preview" width="52" height="52" data-skin="3"></canvas>
+          <div class="lock-overlay" id="lock-3">🔒<br><small>300 🐟</small></div>
+          <span>Rosa</span>
+        </button>
+        <button class="skin-btn" data-skin="4" title="Ozean Katze">
+          <canvas class="skin-preview" width="52" height="52" data-skin="4"></canvas>
+          <div class="lock-overlay" id="lock-4">🔒<br><small>500 🐟</small></div>
+          <span>Ozean</span>
+        </button>
+        <button class="skin-btn" data-skin="5" title="Lava Katze">
+          <canvas class="skin-preview" width="52" height="52" data-skin="5"></canvas>
+          <div class="lock-overlay" id="lock-5">🔒<br><small>800 🐟</small></div>
+          <span>Lava</span>
+        </button>
+        <button class="skin-btn" data-skin="6" title="Geister Katze">
+          <canvas class="skin-preview" width="52" height="52" data-skin="6"></canvas>
+          <div class="lock-overlay" id="lock-6">🔒<br><small>1200 🐟</small></div>
+          <span>Geist</span>
+        </button>
+      </div>
+
+      <button id="btn-start">Spielen</button>
+      <p class="hint">← → Bewegen &nbsp;|&nbsp; ↑ / SPACE Springen</p>
+      <p class="hint biome-hint">🌙 Nacht → 🌋 Lava (Lv.5) → ❄️ Eis (Lv.10) → 🔁</p>
+    </div>
+
+    <div id="game-over-screen" class="screen">
+      <h1>💥 Game Over!</h1>
+      <p>Punkte: <span id="final-score">0</span></p>
+      <p class="go-sub">Fische gesammelt: <span id="final-fish">0</span> &nbsp;|&nbsp; 🏆 Rekord: <span id="go-best-score">0</span></p>
+      <p class="go-sub unlock-msg" id="unlock-msg"></p>
+      <div class="go-btn-row">
+        <button id="btn-restart">🔄 Nochmal</button>
+        <button id="btn-menu" class="btn-secondary">🏠 Menü</button>
+      </div>
+    </div>
+
+    <div id="hud">
+      <span>❤️ <span id="lives">3</span></span>
+      <span>🐟 <span id="score">0</span></span>
+      <span>Level <span id="level">1</span></span>
+      <span id="biome-badge">🌙 Nacht</span>
+    </div>
+  </div>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <script src="game.js"></script>
+</body>
+</html>
+
+
+
