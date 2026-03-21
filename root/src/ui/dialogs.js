@@ -71,10 +71,10 @@ export function openBuyDialog(offer) {
             Laufzeit: <strong id="dlg-term-label">${termYears} Jahre</strong>
           </label>
           <input id="dlg-term" type="range"
-            min="5" max="40" value="${termYears}" step="5"
+            min="5" max="30" value="${termYears}" step="5"
             aria-label="Kreditlaufzeit in Jahren"
           />
-          <small class="dialog__hint">5 bis 40 Jahre – längere Laufzeit = niedrigere Rate, höhere Gesamtkosten</small>
+          <small class="dialog__hint">5 bis 30 Jahre – längere Laufzeit = niedrigere Rate, höhere Gesamtkosten</small>
         </div>
 
         <div class="dialog__section">
