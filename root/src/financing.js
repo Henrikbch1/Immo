@@ -30,7 +30,8 @@ const EQ_TIERS = [
   [680, 0.10, 0.10, 0.12],
   [620, 0.15, 0.15, 0.15],
   [550, 0.20, 0.20, 0.25],
-  [  0, 0.25, 0.30, 0.35],
+  [500, 0.40, 0.50, 0.75],
+  [  0, 0.6, 1, 1],
 ];
 
 /** Gibt den Eigenkapital-Bereich je Kategorie und Bonitätsscore zurück.
