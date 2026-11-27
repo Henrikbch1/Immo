@@ -1,0 +1,131 @@
+/*
+ * Design-Tokens (03 §4). Semantische Ebene als CSS-Variablen je Thema (data-theme),
+ * per Tailwind-4-@theme als Utilities verfügbar (z. B. bg-surface, text-muted).
+ * Komponenten verwenden nur semantische Tokens, keine Hex-Werte.
+ */
+@theme {
+  --color-page: var(--bg-page);
+  --color-surface: var(--bg-surface);
+  --color-raised: var(--bg-raised);
+  --color-fg: var(--text-default);
+  --color-muted: var(--text-muted);
+  --color-subtle: var(--text-subtle);
+  --color-border-control: var(--border-control);
+  --color-border-decor: var(--border-decor);
+  --color-primary: var(--action-primary);
+  --color-on-primary: var(--action-on-primary);
+  --color-focus: var(--focus-ring);
+  --color-positive: var(--status-positive);
+  --color-positive-tint: var(--status-positive-tint);
+  --color-warning: var(--status-warning);
+  --color-warning-tint: var(--status-warning-tint);
+  --color-critical: var(--status-critical);
+  --color-critical-tint: var(--status-critical-tint);
+  --color-info: var(--status-info);
+  --color-info-tint: var(--status-info-tint);
+  --color-design: var(--status-design);
+  --color-design-tint: var(--status-design-tint);
+
+  --font-sans: "Inter Variable", "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --breakpoint-mittel: 600px;
+  --breakpoint-erweitert: 840px;
+  --breakpoint-gross: 1200px;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+}
+
+:root,
+[data-theme="hell"] {
+  --bg-page: #ffffff;
+  --bg-surface: #f4f6f8;
+  --bg-raised: #ffffff;
+  --text-default: #14181f;
+  --text-muted: #454f5c;
+  --text-subtle: #6b7482;
+  --border-control: #6b7482;
+  --border-decor: #d5dae1;
+  --action-primary: #1f4fd8;
+  --action-on-primary: #ffffff;
+  --focus-ring: #1f4fd8;
+  --status-positive: #0b6b3a;
+  --status-positive-tint: #e6f4ec;
+  --status-warning: #8a5300;
+  --status-warning-tint: #fff3dc;
+  --status-critical: #b3261e;
+  --status-critical-tint: #fdecea;
+  --status-info: #1f4fd8;
+  --status-info-tint: #e8eefd;
+  --status-design: #6a3fa8;
+  --status-design-tint: #f1eafb;
+  --elevation-1: 0 1px 2px rgb(0 0 0 / 0.08);
+  --focus-width: 2px;
+}
+
+[data-theme="dunkel"] {
+  --bg-page: #0f1318;
+  --bg-surface: #181d24;
+  --bg-raised: #202630;
+  --text-default: #e8ebef;
+  --text-muted: #a8b0bc;
+  --text-subtle: #7c8695;
+  --border-control: #7c8695;
+  --border-decor: #2b323c;
+  --action-primary: #8fb0ff;
+  --action-on-primary: #0f1318;
+  --focus-ring: #8fb0ff;
+  --status-positive: #5fd08a;
+  --status-positive-tint: #12301f;
+  --status-warning: #f0b44c;
+  --status-warning-tint: #37290f;
+  --status-critical: #ff8a80;
+  --status-critical-tint: #3a1b1a;
+  --status-info: #8fb0ff;
+  --status-info-tint: #16264a;
+  --status-design: #c4a4f0;
+  --status-design-tint: #2a1e40;
+  --elevation-1: 0 1px 2px rgb(0 0 0 / 0.4);
+}
+
+/* Hoher Kontrast (03 §4.1 Regel 5): Text 7:1, Rahmen 4,5:1, Fokusring 3 px, keine Tönungsflächen. */
+[data-theme="kontrast"] {
+  --bg-page: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-raised: #ffffff;
+  --text-default: #000000;
+  --text-muted: #1c2128;
+  --text-subtle: #2e3540;
+  --border-control: #3d4550;
+  --border-decor: #3d4550;
+  --action-primary: #0a2f9e;
+  --action-on-primary: #ffffff;
+  --focus-ring: #0a2f9e;
+  --status-positive: #064d29;
+  --status-positive-tint: #ffffff;
+  --status-warning: #5c3700;
+  --status-warning-tint: #ffffff;
+  --status-critical: #8a1a14;
+  --status-critical-tint: #ffffff;
+  --status-info: #0a2f9e;
+  --status-info-tint: #ffffff;
+  --status-design: #4b2580;
+  --status-design-tint: #ffffff;
+  --elevation-1: none;
+  --focus-width: 3px;
+}
+
+/* biome-ignore-start lint/complexity/noImportantStyles: reduzierte Bewegung muss alles überstimmen (03 §4.6) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* biome-ignore-end lint/complexity/noImportantStyles: siehe oben */

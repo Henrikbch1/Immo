@@ -1,0 +1,22 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Zentrale Versionen (ADR 0001/0002). Upgrades nur über diesen Katalog.
+catalog:
+  "@biomejs/biome": 2.6.9
+  "@tailwindcss/vite": 4.3.5
+  "@tanstack/react-router": 1.170.46
+  "@types/react": 19.3.3
+  "@types/react-dom": 19.3.0
+  "@types/node": 26.6.11
+  "@vitejs/plugin-react": 6.3.0
+  lucide-react: 1.82.0
+  react: 19.3.1
+  react-dom: 19.3.1
+  tailwindcss: 4.3.5
+  typescript: 7.0.2
+  vite: 8.4.0
+  vite-plugin-pwa: 2.0.0
+  vitest: 5.1.2
+  workbox-window: 7.4.1

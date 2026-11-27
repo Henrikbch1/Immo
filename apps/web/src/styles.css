@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@import "@immo/ui/tokens.css";
+
+@source "../../../packages/ui/src";
+
+html {
+  background: var(--bg-page);
+  color: var(--text-default);
+  font-family: var(--font-sans);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
