@@ -47,7 +47,7 @@ export const BEREICHE: readonly Bereich[] = [
     titel: 'Markt',
     kurz: 'Markt',
     icon: Search,
-    ab: 'Z6',
+    ab: 'Z2',
     beschreibung: 'Angebote finden, Exposés prüfen und Objekte durchrechnen.',
   },
   {

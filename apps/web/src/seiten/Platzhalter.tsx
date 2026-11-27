@@ -15,6 +15,22 @@ export function Platzhalter({ bereich }: { bereich: Bereich }) {
           Zur Startseite
         </Link>
       </div>
+      {bereich.id === 'markt' ? (
+        <section aria-labelledby="werkzeuge" className="mt-6">
+          <h2 id="werkzeuge" className="text-lg font-semibold">
+            Schon nutzbar
+          </h2>
+          <Link
+            to="/rechner/kalkulator"
+            className="block rounded-lg border border-border-decor p-4 text-fg no-underline hover:border-border-control"
+          >
+            <span className="block font-semibold">Bierdeckel &amp; Kalkulator</span>
+            <span className="block text-sm text-muted">
+              Eine Wohnung durchrechnen – mit Rechenweg zu jeder Zahl
+            </span>
+          </Link>
+        </section>
+      ) : null}
       {bereich.id === 'finanzen' ? (
         <section aria-labelledby="werkzeuge" className="mt-6">
           <h2 id="werkzeuge" className="text-lg font-semibold">

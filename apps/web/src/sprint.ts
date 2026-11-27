@@ -1,2 +1,2 @@
 /** Aktueller Sprint (docs/plan/11-umsetzung-sprints.md). Am Sprint-Ende hochzählen. */
-export const SPRINT = 'Z1';
+export const SPRINT = 'Z2';

@@ -16,8 +16,14 @@ export function Start() {
           Was du in dieser Version siehst
         </h2>
         <p className="mt-0">
+          <Link to="/rechner/kalkulator" className="font-semibold text-info underline">
+            Neu in Sprint Z2: Bierdeckel &amp; Kalkulator
+          </Link>{' '}
+          – Kaufnebenkosten je Bundesland, Renditen und Cashflow einer Wohnung, jede Zahl mit Rechenweg.
+        </p>
+        <p>
           <Link to="/rechner/darlehen" className="font-semibold text-info underline">
-            Neu in Sprint Z1: Darlehensrechner
+            Seit Sprint Z1: Darlehensrechner
           </Link>{' '}
           – Rate, Tilgungsplan, Restschuld nach der Zinsbindung und Sondertilgung.
         </p>
@@ -25,7 +31,7 @@ export function Start() {
           <li>App-Gerüst mit Navigation für Desktop, Tablet und Handy</li>
           <li>Helles, dunkles und kontrastreiches Thema (Menü › Einstellungen)</li>
           <li>Installierbar als App, funktioniert offline</li>
-          <li>Fußzeile mit Sprint, Commit und Build-Zeit</li>
+          <li>Fußzeile mit Sprint, Commit, Build-Zeit und Prüfsumme der aktuellen Rechnung</li>
         </ul>
       </section>
 
