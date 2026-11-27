@@ -114,7 +114,7 @@ IM SPIEL  (App-Shell mit Zeitleiste)
 │  ├─ S-09 Nachricht/Ereignis mit Entscheidungsdialog ......... [P3]
 │  └─ S-10 Chronik (Archiv, durchsuchbar) ...................... [P4]
 ├─ MARKT
-│  ├─ S-11 Angebote: Liste & Karte, Linsen ..................... [P3 Liste, P2/P5 Karte]
+│  ├─ S-11 Angebote: Liste & Karte, Linsen ..................... [P3 Liste, P2 Karte Länder/Kreise, P7 Gemeinden]
 │  ├─ S-38 Regionen-Profil Land/Kreis/Gemeinde (neu) ......... [P2]
 │  ├─ S-12 Suchaufträge ........................................ [P5]
 │  ├─ S-13 Exposé-Detail ....................................... [P3]
@@ -346,7 +346,7 @@ Für **alle** Screens gilt, ohne dass es je Screen wiederholt wird:
 |---|---|---|---|
 | **1 Modus** | Karten: *Lernpfad: Die erste Wohnung* (empfohlen, ca. 20 Min.) · *Freies Spiel* (Start Nov. 2026 mit echten Marktwerten, Zukunft simuliert) · *Historisches Szenario* [P6] · *Challenge* [P6]. Je Karte: Dauer, was man lernt, Hilfestufe-Empfehlung | Lernpfad, wenn kein Spielstand existiert; sonst Freies Spiel | – |
 | **2 Startprofil** | Vorlagen-Personas (Karten mit Kernzahlen) **oder** „Eigene Angaben“: Nettoeinkommen/Monat, Einmalzahlungen/Jahr, Beschäftigung, Haushaltsgröße, Wohnkosten, sonstige Raten, Eigenkapital (Giro/Tagesgeld/Depot), Wohnort/Region (Gemeindesuche), Grenzsteuersatz (aus Einkommen abgeleitet, änderbar im Korridor) | Persona „Einsteiger 2026“ (Recherche 14, P6) | `EK:profil.grenzsteuersatz`, `EK:bank.kreditrahmenSchaetzung`, `EK:profil.sparrate` |
-| **3 Ziel & Hilfe** | Ziel-Vorlagen („Erste Wohnung, die sich selbst trägt“, „1.000 €/Monat Cashflow vor Steuern bis 2036“, „Nettovermögen 300.000 €“) oder eigenes Ziel; optional ein Lernziel. Hilfestufe (Lernmodus/Standard/Profi, Vergleichstabelle aus 0.5 aufklappbar). Marktschwierigkeit getrennt. Unter „Erweitert“: Startwert (Seed), Startdatum (nur Szenarien) | Ziel passend zum Modus; Hilfestufe Lernmodus bei Lernpfad | `EK:ziel.prognose` |
+| **3 Ziel & Hilfe** | Ziel-Vorlagen („Erste Wohnung, die sich selbst trägt“, „1.000 € Netto-Cashflow/Monat bis 2035“, „Nettovermögen 300.000 €“) oder eigenes Ziel; optional ein Lernziel. Hilfestufe (Lernmodus/Standard/Profi, Vergleichstabelle aus 0.5 aufklappbar). Marktschwierigkeit getrennt. Unter „Erweitert“: Startwert (Seed), Startdatum (nur Szenarien) | Ziel passend zum Modus; Hilfestufe Lernmodus bei Lernpfad | `EK:ziel.prognose` |
 
 **Live-Seitenpanel „So sieht dich eine Bank“** (ab Schritt 2, Desktop rechts, mobil als einklappbare Leiste unten): Haushaltsüberschuss nach Bankansatz, grobe Kreditrahmen-Bandbreite („ungefähr 160.000–210.000 € Darlehen“), Liquiditätsreserve nach typischem Kauf, Hinweise („Probezeit: viele Banken finanzieren erst nach Ende der Probezeit“). Alles als Bandbreite mit Flag „abgeleitet“ bzw. „Vereinfachung“.
 
@@ -355,7 +355,7 @@ Für **alle** Screens gilt, ohne dass es je Screen wiederholt wird:
 **Zustände:**
 - *Erstnutzung:* vor Schritt 1 einmalig der Start-Disclaimer (Kap. 5.4) als ruhige Karte mit „Verstanden, los geht’s“.
 - *Rechnen:* Bankschätzung aktualisiert sich nach Feldverlassen; während der Rechnung bleibt der alte Wert grau mit „wird berechnet“.
-- *Fehler:* Feldvalidierung („Bitte ein Nettoeinkommen wie 2.850 eingeben“); unplausible Kombination als Hinweis, nicht als Sperre („Eigenkapital unter 5.000 €: Kaufnebenkosten wirst du kaum decken können. Du kannst trotzdem starten.“).
+- *Fehler:* Feldvalidierung („Bitte ein Nettoeinkommen wie 3.100 eingeben“); unplausible Kombination als Hinweis, nicht als Sperre („Eigenkapital unter 5.000 €: Kaufnebenkosten wirst du kaum decken können. Du kannst trotzdem starten.“).
 - *Lernmodus vs. Profi:* Profi sieht alle Felder direkt; Lernmodus zeigt Persona-Auswahl zuerst und eigene Angaben hinter „Eigene Zahlen eingeben“.
 
 **Layout:**
@@ -365,8 +365,8 @@ Desktop/Tablet quer                                         Mobil
 │ Neues Spiel            Schritt 2 von 3│ So sieht dich  │  │ ‹ Neues Spiel   2/3  │
 │ ○ Einsteiger 2026  ● Angestellte+Partner│ eine Bank     │  │ Persona-Karten (wisch)│
 │ ○ Eigene Zahlen                       │ Überschuss     │  │ …                    │
-│ Netto/Monat [ 2.850 €]  Beschäftigung ▾│  +640 €/Monat  │  │ Netto/Monat [2.850 €]│
-│ Eigenkapital [48.000 €] Region [Leipzig…]│ Rahmen grob  │  ├──────────────────────┤
+│ Netto/Monat [ 3.100 €]  Beschäftigung ▾│  +640 €/Monat  │  │ Netto/Monat [3.100 €]│
+│ Eigenkapital [45.000 €] Region [Leipzig…]│ Rahmen grob  │  ├──────────────────────┤
 │ …                                     │ 160–210 Tsd. € │  │ Bank: Rahmen ~160–210│
 │                 [Zurück] [Weiter ▸]   │ (abgeleitet)   │  │ [Zurück]   [Weiter ▸]│
 └───────────────────────────────────────┴────────────────┘  └──────────────────────┘
@@ -377,7 +377,7 @@ Desktop/Tablet quer                                         Mobil
 **Microcopy:**
 - Untertitel Schritt 2: „Mit welchem Leben startest du? Die Zahlen bestimmen, was dir eine Bank zutraut.“
 - Hinweis Grenzsteuersatz: „Vereinfachung: ohne Soli und Kirchensteuer.“
-- Persona-Karte: „Einsteiger 2026 · 2.850 € netto · 48.000 € Eigenkapital · Leipzig · angestellt, unbefristet“
+- Persona-Karte: „Einsteiger 2026 · 3.100 € netto · 45.000 € Eigenkapital · Leipzig · angestellt, unbefristet“
 
 **Akzeptanzkriterien:**
 - AK-S02-1: Mit Standardwerten ist ein Spiel in ≤ 3 Aktivierungen und < 30 s gestartet; mit eigenen Angaben in < 2 Min. (Usability-Test, Median).
@@ -1602,7 +1602,7 @@ Karte „Einkommensteuer 2027 (Vereinfachung: ohne Soli und Kirchensteuer)“: E
 - AK-O09-3: Schattenrechnung zeigt immer „damals erkennbar besser: …“ mit Begründung; fehlt der Snapshot, wird sie nicht angezeigt (statt zu raten).
 - AK-O09-4: Steuer- und NK-Zahlen sind Kennzahl-Objekte (O-01) mit Vereinfachungen und Rechtsgrundlage.
 
-### 3.8 Onboarding-Szenario „Die erste Wohnung“ (K1) · [P3 Ablauf · P6 Lernpfad-Einbindung]
+### 3.8 Onboarding-Szenario „Die erste Wohnung“ (K2) · [P3 Ablauf · P6 Lernpfad-Einbindung]
 
 **Ziel (B7):** In unter 2 Minuten zur ersten echten Entscheidung, ohne Textwand und ohne Registrierung. Das Tutorial **ist** ein Szenario im normalen Spiel, mit denselben Screens und Regeln. Kein separater Tutorial-Modus, keine Modal-Ketten, höchstens ein Hinweis (Coachmark, O-12) pro Bildschirm, immer überspringbar.
 
@@ -1624,7 +1624,7 @@ Karte „Einkommensteuer 2027 (Vereinfachung: ohne Soli und Kirchensteuer)“: E
 | 11 | 12 Monate spielen | S-06/S-07 | „Weiter“ bis Ereignis, erster Monatsbericht | Monatsbericht-Coachmark „Was ist passiert?“ | Kennzahlen im Zeitverlauf |
 | 12 | Kauf-Review und erster Debrief | S-42/S-36 | erwartet vs. tatsächlich, ein Vorsatz | Leitfragen sichtbar | Reflexion |
 
-Erwartete Dauer: Schritte 0–4 ≤ 3 Minuten, bis zur ersten Kaufentscheidung ≤ 20 Minuten (Usability-Test 2 misst das). **Gezieltes Scheitern** (Productive Failure) kommt erst ab Szenario 2 (K2), nie in K1.
+Erwartete Dauer: Schritte 0–4 ≤ 3 Minuten, bis zur ersten Kaufentscheidung ≤ 20 Minuten (Usability-Test 2 misst das). **Gezieltes Scheitern** (Productive Failure) kommt erst ab dem Folgekapitel K3, nie in K2.
 
 **3.8.2 Worked Example „Musterprüfung“ bei Angebot 1**
 
@@ -1642,7 +1642,7 @@ Darstellung: pro Schritt ein Mini-Wasserfall (K-13) mit Tabellen-Fallback; die S
 
 **3.8.3 Ausblenden der Hilfen (Fading) und Regeln**
 
-| Hilfe | K1 Angebot 1 | Angebot 2 | Angebot 3 | ab Szenario 2 | Profi |
+| Hilfe | K2 Angebot 1 | Angebot 2 | Angebot 3 | ab K3 | Profi |
 |---|---|---|---|---|---|
 | Musterlösung | sichtbar | verborgen, „Lösung zeigen“ | verborgen | verborgen | aus |
 | Coachmarks (O-12) | max. 1 je Screen, erstmalig | nur neue Screens | nur neue Screens | nur freigeschaltete Bereiche | aus |
@@ -1652,7 +1652,7 @@ Darstellung: pro Schritt ein Mini-Wasserfall (K-13) mit Tabellen-Fallback; die S
 
 Regel **Expertise-Umkehr:** Zeigen Prüfungen zweimal in Folge vollständig korrekte Antworten, wird die Hilfestufe für diese Aufgabe um eine Stufe gesenkt und das auch gesagt („Du prüfst sicher. Hinweise gibt es ab jetzt nur noch auf Abruf.“). Rücknahme jederzeit in S-04.
 
-**Expertenweg:** „Ich kenne mich aus“ in S-02 → Einstufungs-Check mit 5 Fragen (Dauer ≤ 2 Minuten, überspringbar) oder direkt Sandbox mit allen Systemen (Hilfestufe Profi). Der Check **ersetzt** das Szenario nicht zwangsweise; K1 bleibt in der Akademie (S-33) jederzeit startbar.
+**Expertenweg:** „Ich kenne mich aus“ in S-02 → Einstufungs-Check mit 5 Fragen (Dauer ≤ 2 Minuten, überspringbar) oder direkt Sandbox mit allen Systemen (Hilfestufe Profi). Der Check **ersetzt** das Szenario nicht zwangsweise; K2 bleibt in der Akademie (S-33) jederzeit startbar.
 
 **Skizze Schritt 5 (Desktop):**
 ```
@@ -1666,9 +1666,9 @@ Regel **Expertise-Umkehr:** Zeigen Prüfungen zweimal in Folge vollständig korr
 
 **Akzeptanzkriterien:**
 - AK-S02-5: Von „Neues Spiel“ bis zur ersten Entscheidung im Posteingang ≤ 2 Minuten (Median im Test 2).
-- AK-K1-1: Kein Tutorial-Schritt blockiert die normale Navigation; Überspringen ist in jedem Schritt sichtbar; ein Coachmark höchstens einmal je Screen und Spielstand.
-- AK-K1-2: Musterlösung nutzt die echten Werte des Angebots und dieselben Kennzahl-Schlüssel wie der Kalkulator (keine eigene Tutorial-Rechnung).
-- AK-K1-3: Nach Abschluss von K1 sind Navigation und alle Bereiche unverändert sichtbar; neu Freigeschaltetes trägt „Neu“, taucht nie plötzlich auf (L8).
+- AK-K2-1: Kein Tutorial-Schritt blockiert die normale Navigation; Überspringen ist in jedem Schritt sichtbar; ein Coachmark höchstens einmal je Screen und Spielstand.
+- AK-K2-2: Musterlösung nutzt die echten Werte des Angebots und dieselben Kennzahl-Schlüssel wie der Kalkulator (keine eigene Tutorial-Rechnung).
+- AK-K2-3: Nach Abschluss von K2 sind Navigation und alle Bereiche unverändert sichtbar; neu Freigeschaltetes trägt „Neu“, taucht nie plötzlich auf (L8).
 
 ### 3.9 O-06 Befehlspalette & Tastenkürzel · [P3 Grundfunktion · P6 Aktionen vollständig]
 
@@ -1753,11 +1753,11 @@ Der Rechenkern rechnet **immer** den vollen Realismus (L7). Die Oberfläche blen
 
 | Stufe | Szenario/Lernpfad | Voll sichtbar | Vereinfacht angezeigt (Kennzeichnung) |
 |---|---|---|---|
-| 1 | K1 Erste Wohnung | Kaltmiete, Zins, Tilgung, Reserve | Nebenkosten, Instandhaltung, Leerstand als Pauschale („geschätzt, wird in K2 erklärt“); Steuern „vereinfacht: nach Steuern geschätzt“ |
-| 2 | K2 Bewirtschaftung | + Nebenkosten, Instandhaltung, Leerstand, Mieterhöhung | Steuern pauschal |
-| 3 | K3 Steuern | + AfA, Werbungskosten, Steuerwirkung | Anschluss/Zinsrisiko über Standardannahme |
-| 4 | K4 Anschlussfinanzierung | + Zinsbindung, Prolongation, Umschuldung, Zinsstress | Bankrahmen für Portfolio vereinfacht |
-| 5 | K5 Skalieren | + Beleihung, Kreditrahmen, Portfolio, Verkauf | – |
+| 1 | K2 Die erste Wohnung | Kaltmiete, Zins, Tilgung, Reserve | Nebenkosten, Instandhaltung, Leerstand als Pauschale („geschätzt, wird in Stufe 2 erklärt“); Steuern „vereinfacht: nach Steuern geschätzt“ |
+| 2 | Bewirtschaftung (K3–K5) | + Nebenkosten, Instandhaltung, Leerstand, Mieterhöhung | Steuern pauschal |
+| 3 | Steuern (in K4 angelegt) | + AfA, Werbungskosten, Steuerwirkung | Anschluss/Zinsrisiko über Standardannahme |
+| 4 | K7 Anschlussfinanzierung | + Zinsbindung, Prolongation, Umschuldung, Zinsstress | Bankrahmen für Portfolio vereinfacht |
+| 5 | K8 Skalieren | + Beleihung, Kreditrahmen, Portfolio, Verkauf | – |
 
 Kennzeichnung im UI: Status-Flag **DESIGN/„Vereinfachung“** (K-06) + Text „Steuern: pauschal geschätzt, wird in Szenario 3 erklärt“ + Link zur Lektion. In Standard/Profi sind alle Stufen sichtbar (0.5). Wechsel der Stufe: Banner „Neu: Steuern sind jetzt aufgeschlüsselt“ mit Link, Navigation unverändert.
 
@@ -2135,7 +2135,7 @@ Prinzip: **Design-System und Shell zuerst, Kern-Screens als vertikaler Schnitt (
 | **P0 Fundament** | App-Shell (Router, Sidebar/Rail/Tab-Leiste, Zeitleiste als leere Hülle), **Design-Tokens hell/dunkel/Kontrast**, Schriften, PWA-Manifest, Storybook, Playwright + axe-Grundgerüst, `tokens:kontrast`-Skript, Leerzustände aller Bereiche (S-06 bis S-37 als Platzhalterrouten) | Tokens, K-02 (Hülle), K-18, K-19, K-20, K-23/24 (Grundform) | axe 0 auf Shell, Viewport-Matrix, Offline-Installation |
 | **P1 Rechenkern** | **Datenvertrag `Kennzahl`**, Formatter K-01, Registry der Schlüssel, Formatierungs-Goldens; Entwickler-Ansicht „Kennzahl-Galerie“ (intern) | K-01, K-04 (Entwurf), K-06 | Goldens de-DE, Summentests Herleitung |
 | **P2 Daten & Regionen** | S-38 Regionen-Profil, S-41 Quellen & Lizenzen, Karte Länder/Kreise (S-11 Karte-Grundlage), Status-Flags in realen Daten | K-06, K-13 (Karte/Balken), K-09 Grundform | Quellen/Stand überall sichtbar, Karte mit Listen-Alternative |
-| **P3 Vertical Slice** | S-01–S-04 (basic), **S-02 Startassistent + Onboarding K1**, S-06 Cockpit, S-07 Monatsbericht, S-08/S-09 Posteingang, S-11 Liste+Kreis-Karte, S-13 Exposé, S-14 Bierdeckel+Vollkalkulation (ohne Steuer), S-16, S-17, S-18 Einzelgebot, S-19, S-20/21/23 (Basis), S-27 Kontostand, S-28 Übersicht, S-34 Glossar (Grundbestand), S-37 Ziel; **O-01, O-02, O-04, O-05, O-07, O-10, O-11, O-12 (leicht), O-13, O-14**, O-03 Grundgerüst, O-06 Grundfunktion, Krisen-Banner (Skript) | K-01–K-20, K-23/24, K-28/29 | Screen-DoD für alle; axe, Tastatur-E2E T1–T5, visuelle Regression, **Usability-Test 1** |
+| **P3 Vertical Slice** | S-01–S-04 (basic), **S-02 Startassistent + Onboarding K2**, S-06 Cockpit, S-07 Monatsbericht, S-08/S-09 Posteingang, S-11 Liste+Kreis-Karte, S-13 Exposé, S-14 Bierdeckel+Vollkalkulation (ohne Steuer), S-16, S-17, S-18 Einzelgebot, S-19, S-20/21/23 (Basis), S-27 Kontostand, S-28 Übersicht, S-34 Glossar (Grundbestand), S-37 Ziel; **O-01, O-02, O-04, O-05, O-07, O-10, O-11, O-12 (leicht), O-13, O-14**, O-03 Grundgerüst, O-06 Grundfunktion, Krisen-Banner (Skript) | K-01–K-20, K-23/24, K-28/29 | Screen-DoD für alle; axe, Tastatur-E2E T1–T5, visuelle Regression, **Usability-Test 1** |
 | **P4 Bewirtschaftung & Steuern** | S-10 Chronik, S-21 vollständig, S-22 + Mieterhöhungs-Assistent, S-23 vollständig, S-24, S-25, S-30 Steuern, S-31 Jahresbericht, S-36 Tagebuch, S-39, S-40 Kalender, **O-09 Jahresabschluss (3.7), Debrief v1**, Zeitbudget/Delegation | K-14 (komplexe Prozesse), K-17 | T6, T9, NK-/WEG-Abrechnung E2E, Screen-DoD |
 | **P5 Skalierung & Finanzen** | S-12, S-15, S-18 Gebotsrunden, S-20 vollständig (Linsen, Gruppen), S-26 Verkauf, S-27 Prognose + Wasserfall Portfolio, S-28 Anschluss/Sondertilgung, S-29 Bank, S-32 Szenario-Labor, **S-43 + O-08 Krisen-Flow (3.6)** | K-10/11 gespeicherte Ansichten, K-13 Tornado/Szenarien, K-12 vollständig | T7, T8, T10, Krisen-Eskalationstests, Tabellen mit 200 Zeilen |
 | **P6 Lernen & Szenarien** | S-33 Lernpfad/Challenges, S-34 vollständig, S-35 Mikro-Lektionen, S-36 Debrief-Archiv, S-37 vollständig, S-42 Kauf-Review, S-03 Checkpoints, **Mentor v1 (3.10)**, **Modell-Progression (3.11)**, Schattenrechnung | K-26, O-03 voll, Auszeichnungen (sparsam) | **Usability-Test 2** (Onboarding), Textreview `ux-copy` |
@@ -2145,4 +2145,4 @@ Prinzip: **Design-System und Shell zuerst, Kern-Screens als vertikaler Schnitt (
 
 **Abhängigkeiten:** O-01 und K-04 brauchen den Datenvertrag aus P1; Karte braucht P2-Daten; O-09 braucht P4-Rechenkern (NK, Steuern); O-08 braucht P5-Bank/Anschluss; Mentor und Debrief-Archiv brauchen P6-Content. Ohne die Voraussetzung wird die Funktion **nicht angedeutet**, sondern als Leerzustand mit Phasenhinweis geführt.
 
-**Offene Punkte (zur Entscheidung):** (1) Schriftlizenz Inter/Plex final bestätigen (OFL); (2) Kontrastwerte in 4.1 im Designreview mit echten Flächen nachmessen; (3) Gender-/Inklusionsregel in 5.2 mit dem Auftraggeber abstimmen; (4) Telemetrie Opt-in ja/nein; (5) Reserve-Schwelle und Stufenschwellen in 3.6 aus Fachspezifikation 10/12 verbindlich verankern; (6) Schreibweise Plugin-Namen (`design-critique`, `accessibility-review`, `ux-copy`) beim Installieren in P0 verifizieren.
+**Offene Punkte (zur Entscheidung):** (1) Schriftlizenz Inter/Plex final bestätigen (OFL); (2) Kontrastwerte in 4.1 im Designreview mit echten Flächen nachmessen; (3) erledigt: Gender-Regel mit Entscheidung E8 (kein Gendern) in 5.2 festgelegt; (4) Telemetrie Opt-in ja/nein; (5) Reserve-Schwelle und Stufenschwellen in 3.6 aus Fachspezifikation 10/12 verbindlich verankern; (6) Schreibweise Plugin-Namen (`design-critique`, `accessibility-review`, `ux-copy`) beim Installieren in P0 verifizieren.

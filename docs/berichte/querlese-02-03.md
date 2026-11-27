@@ -1,0 +1,52 @@
+# Querlese-Bericht: 02-simulationsmodell.md und 03-ux-ui.md gegen 00 / 01 / 04 / 06
+
+**Stand:** 27.11.2026 · **Geprüft:** `docs/plan/02-simulationsmodell.md` (Kapitel 0, 1.1, 1.5–1.7, 1.10, 2.x Phasenzeilen, 2.6, 2.7, 2.13, 2.17, 2.18, 4, 6) und
+`docs/plan/03-ux-ui.md` (0.4/0.5, 1.1, S-02, S-03–S-05, 3.6, 3.8, 3.11, 4.8, 5.2, 7.4, 8) gegen `00`, `01`, `04`, `06`.
+**Regel:** eindeutige Widersprüche minimal korrigiert (bei Zweifel gilt 00/01/04/06), nicht eindeutige nur gelistet. Es wurde nichts committet.
+Nicht jede Zeile von 02 (160 KB) und 03 (228 KB) wurde gelesen; die Prüfung war gezielt auf Begriffe, Zahlen, Phasen, Screen-/Komponenten-IDs, Modi.
+
+## A. Behobene Widersprüche (10)
+
+| # | Fundstelle | Befund | Aktion | Begründung |
+|---|---|---|---|---|
+| 1 | 02 §1.1 (`MonthIndex`) vs. 04 §3.3 | 02: `jahr*12 + (monat−1)`, Nov. 2026 = 24.322. 04: „absolut ab 2000-01“ (Nov. 2026 = 322). | **behoben** in 02: `(jahr − 2000)*12 + (monat−1)`, Nov. 2026 = 322 | 04 gilt; die Zahl 24.322 wird sonst nirgends verwendet. |
+| 2 | 02 §0.2 (Modul `bank/`) vs. 02 §2.6 | „Kreditprüfung P0–P9“; 2.6 benennt die Prüfschritte wegen Phasen-Tags in PS0–PS9 um. | **behoben**: „PS0–PS9“ | interne Inkonsistenz, Namenskollision mit Phasen P0–P9. |
+| 3 | 06 Paket 3.5 vs. 02 §2.6/§6 | 06: „Prüfschritte P0–P6“ (Kollision mit Phasennamen). 02: PS0–PS6 + PS8/9 in P3, PS7 in P5. | **behoben** in 06: „PS0–PS6 und PS8/9 (PS7 Portfolio folgt in P5)“ | eindeutige Namens-/Phasenangleichung (06 5.2 führt Portfolio erst in P5). |
+| 4 | 02 §2.7 „Phase“ vs. 06 Paket 4.9, 02 §6 (P4), 02 §2.10 | 2.7 setzt Delegation in P5; 06 4.9 „Zeitbudget + Delegation“ in P4, 02 §6 und 2.10 ebenfalls P4. | **behoben** in 02 2.7: Delegation → P4 | 06 gilt; 02 war intern widersprüchlich. |
+| 5 | 03 §1.1 Sitemap S-11 vs. 03 S-11-Kopf, 03 §8, 06 Paket 3.7/P7 | Sitemap „[P3 Liste, P2/P5 Karte]“; Detail „[P3 Liste · P2 Karte Länder/Kreise · P7 Gemeinden]“; 06: Kreis-Karte in P3, Gemeinde-Karte P7. | **behoben**: Sitemap an Detailzeile angeglichen | P5 für die Karte hat keine Entsprechung in 06. |
+| 6 | 03 §3.8 (Onboarding „Die erste Wohnung“ als **K1**), §8 P3, AK-K1-x | 01 §4.1: **K2** = „Die erste Wohnung (= Onboarding)“, K1 = „Bankfähig werden“ (P6, Vorstufe P3). | **behoben**: K1 → K2 (Überschrift, Hilfetabelle, Expertenweg, AK-K2-1…3, §8); „ab Szenario 2 (K2)“ → „ab Folgekapitel K3“ | 01 gilt. |
+| 7 | 03 §3.11 Tabelle (Stufe ↔ Kapitel) | Kapitelnamen K1–K5 (Erste Wohnung, Bewirtschaftung, Steuern, Anschluss, Skalieren) passen nicht zu 01 (K7 Anschlussfinanzierung, K8 Skalieren). | **teilweise behoben**: Zeilen 1, 4, 5 → K2, K7, K8; Zeile 2 „Bewirtschaftung (K3–K5)“, Zeile 3 „Steuern (in K4 angelegt)“; Text „wird in K2 erklärt“ → „in Stufe 2“. Rest siehe O-11 | Zuordnung der Stufen zu 01-Kapiteln nach 01 §4.1; Stufen 2/3 sind nur Näherung. |
+| 8 | 03 §8 „Offene Punkte“ (3) | „Gender-/Inklusionsregel mit Auftraggeber abstimmen“ – entschieden als E8 (kein Gendern), 03 §5.2 nennt E8 bereits. | **behoben**: als erledigt markiert | veralteter offener Punkt. |
+| 9 | 03 S-02 Schritt 3 (Ziel-Vorlage) vs. 01 §9 | 03: „1.000 €/Monat Cashflow **vor Steuern** bis 2036“; 01: „1.000 € **Netto**-Cashflow/Monat bis 2035“; Cockpit/00 nutzen Cashflow nach Steuern. | **behoben**: „1.000 € Netto-Cashflow/Monat bis 2035“ | 01 gilt. |
+| 10 | 03 S-02 (Persona-Karte, Layout, Microcopy) vs. 01 §5.2 S1 | 03: „Einsteiger 2026 · 2.850 € netto · 48.000 € EK“; 01 S1: **3.100 €** netto, **45.000 €** EK. | **behoben**: auf 3.100 € / 45.000 € (auch Layout-Skizze und Fehlertext-Beispiel) | 01 gilt; Persona-Karte nennt den Standardwert, nicht nur ein Beispiel. |
+
+## B. Offene Fälle (nicht eindeutig, nicht geändert)
+
+| # | Fundstelle | Befund | Aktion | Begründung |
+|---|---|---|---|---|
+| O-1 | 02 §1.7 („Versionen – drei Ebenen“) vs. 00 §2/§9, 01 §4.2, 04 §3.4 | 02: `rulesVersion` = Version von Engine-Logik + Pipeline (z. B. `2026.3`), das Rechtsjahr heißt separat „Rechtsjahrgang“ (`DE-2026`). 00/01/04: `rulesVersion` pro Steuer-/Rechtsjahr (`de-2026.2`). | **offen** | Begriffsentscheidung nötig (zwei Konzepte trennen und 04/00/01 anpassen, oder 02 zurückbauen). Betrifft ADR 0009 und Save-Envelope. |
+| O-2 | 02 §2.17 vs. 03 §3.6 (+ 01 §6) | Krisenmodell zweimal: 02 `GRÜN/GELB/ORANGE/ROT/SCHWARZ` (Reichweite ≥ 6 / 3–6 / < 3 Monate; ORANGE+ stoppt). 03 Stufen 0–5 (Frühwarnung bei Lücke ≤ 12 Monate, „kritisch“ bei Lücke ≤ 3 Monate **oder** Reichweite < 1 Monat; Standard-Reserve 6 Monate). 01: Puffer 10–20 T€. | **offen** | Schwellen und Stufenzahl widersprechen sich fachlich; 03 nennt dies selbst offen (Punkt 5). Entscheidung für eine Stufenlogik nötig (inkl. Reserve in Monaten vs. Euro). |
+| O-3 | 03 §7.4 / S-04 („Telemetrie Opt-in“, Messung P6–P8) vs. 04 §4 und 08 O16 | 04: „Keine Telemetrie im MVP“; 08 O16: „keine im MVP, P8“. 03 plant lokale Opt-in-Telemetrie ab P6 und einen Schalter in S-04 (P3). | **offen** | MVP-Grenze nicht definiert; Entscheidung O16 steht aus. |
+| O-4 | 03 §4.8 / §8 P0 (Storybook, je Komponente Pflicht) vs. 04 §6 („optional Storybook 10“), 06 P0 | 03 verlangt Storybook ab P0, 04 nennt es optional, 06 P0 führt es nicht. | **offen** | Technikentscheidung (ADR 0006); danach 03 oder 04 anpassen. |
+| O-5 | 03 §1.1 S-36 „[P4 Tagebuch, P6 Debriefs]“, §8 P4 vs. 06 Paket 6.4 | 03 liefert das Entscheidungstagebuch in P4; 06 6.4 (Akademie) in P6, 4.8 nur „Debrief v1“. | **offen** | Phase des Tagebuchs ungeklärt (hängt von Debrief v1 ab). |
+| O-6 | 02 §2.13 Phase („P3: Variante A als Vorschau im Rechner“), 03 §3.8.2 Schritt 5 („+38 € nach Steuern, vereinfacht“) vs. 06 Paket 3.7 / 03 §8 („Vollkalkulation ohne Steuer“) | Steuer-Vorschau in P3: ja (02, 03 Onboarding) oder nein (06, 03 §8)? | **offen** | Bei Zweifel gilt 06, aber das Onboarding-Beispiel zeigt „nach Steuern“; Klärung nötig (vereinfachte Pauschale vs. gar keine). |
+| O-7 | 01 §5.2 S2 („Splitting“) vs. 02 §2.13 (Splitting P5) und §2.7 | Startprofil S2 mit Splitting ist in P3 vorgesehen (06 3.3), die Steuerwirkung/Splitting aber erst P4/P5. | **offen** | Wirkung in P3 klären (nur Profildaten oder rechnerisch). |
+| O-8 | 01 §6 (Zeitbudget „z. B. 20 h/Monat“, DESIGN) vs. 02 §2.7 (Aktionspunkte AP: 12/14/16 pro Monat) | Zwei Einheiten für dasselbe Konzept. | **offen** | Abbildung h → AP nicht festgelegt; Design-Entscheidung. |
+| O-9 | 02 §2.17/§6 (P3: Dispo, GELB/ORANGE, Rücklastschrift), 03 §3.6 („Erste Krise“ als Skript in P3) vs. 06 Paket 5.7 (Krisen-Flow P5) | Teil-Krisenmodell in P3 in 02/03, in 06 erst P5. | **offen** | Plausibel als Vorstufe; 06 nennt es nicht. Roadmap-Ergänzung oder Abgrenzung nötig. |
+| O-10 | 03 §4.8 Komponenten-Katalog | Verwendet, aber nicht definiert: **K-02** (Zeitleiste, nur in 1.4/§8), **K-28** (Angebotsvergleich, S-17), **K-29** (Karten-Liste, S-11). K-11 ist mit K-10 zusammengefasst; K-21/22/25/27 unbelegt. §8 P3 nennt „K-01–K-20, K-23/24, K-28/29“. | **offen** | Spezifikation der Komponenten fehlt; nicht erfindbar. |
+| O-11 | 03 §3.11 und UI-Texte „wird in Szenario 2/3 erklärt“ vs. 01 §4.1 (K1–K10) | Stufenmodell (5 Stufen) und Lernpfad-Kapitel (10) sind nicht deckungsgleich; Stufe 3 „Steuern“ hat kein eigenes Kapitel in 01. UI-Texte nutzen „Szenario n“ = Stufe n. | **offen** | Zuordnung Stufe ↔ Kapitel und Texte brauchen eine Produktentscheidung. |
+| O-12 | 03 §3.8.1 Schritte 3, 9, 12 (P3-Onboarding) vs. 03 §1.1, 06 | Schritt 3: „Suchauftrag anlegen?“ (S-12 ist P5); Schritt 9: „Checkpoint“ (S-03 Checkpoints P6); Schritt 12: Kauf-Review S-42 (P6). | **offen** | Onboarding in P3 verweist auf Funktionen späterer Phasen; Abgrenzung (Skript/Platzhalter) fehlt. Betrifft auch 01 §3 Stopp-Regel „neues Angebot passt zu Suchauftrag“ und 02 B07 (Suchprofil P3). |
+| O-13 | 03 S-05 „Konto & Sync“ (P8) vs. 04 §4/§10 („alles lokal“), 06 P8 | Sync benötigt Backend, in 04/06 nicht vorgesehen; 04 §9 verweist auf Konto-Frage in 08. | **offen** | Entscheidung zu Konten (08) abwarten. |
+| O-14 | 03 S-02 (Persona-Karte „… · Leipzig“, Fixture „Gohlis-Standard“) vs. 01 S1 („Wohnort wählbar“), E7 | Region im Beispiel/Standard ist Leipzig (Sachsen), Fokusländer sind NI/NW/HB. | **offen** | Standardregion der Persona und Test-Fixture ungeklärt. |
+| O-15 | 03 L2, S-02, 3.8.1, 3.8.2 („die Spielerin“, 4 Stellen) vs. E8 | Generisches Femininum; E8 verlangt normale Schreibweise, neutral wo natürlich. Keine Gendersonderzeichen gefunden; Du-Anrede durchgängig. | **offen** | Stilfrage, Umformulierung (z. B. „du“) ändert mehrere Sätze. |
+| O-16 | 03 §1.1/§8 (S-14 „P5 vollständig“), S-27 vs. 06 Paket 4.10 (UI P4: „Liquidität“) | S-14 „vollständig“ erscheint in keiner Phasenzeile von §8; 06 4.10 liefert S-27 „Liquidität“ in P4, 03 erst Prognose in P5. | **offen** | Phasenzuordnung der Ausbaustufen unscharf. |
+| O-17 | 02 §2.1 („Replay“ P6) und §6 P2 („macro (Replay-Lader)“) vs. 06 Paket 2.4 | P2 soll Zeitreihen im Datenpaket liefern; „Replay“ als Engine-Funktion P6. Bezeichnung P2 widerspricht 2.1. | **offen** | Vermutlich nur Lader der Reihen in P2; Formulierung klären. |
+| O-18 | 01 §4.1 (K2 = Onboarding P3) vs. 06 P3 (keine Lernpfad-Pakete) und 6.1 (K1–K9 in P6) | 03 §8 liefert „Onboarding K2“ in P3; 06 enthält dafür kein Arbeitspaket (nur 3.3 Startassistent, 6.1 ab P6). | **offen** | Arbeitspaket für das Onboarding-Szenario in 06 fehlt; Entscheidung, ob P3 oder P6. |
+| O-19 | 02 §2.18 M16 „Legendenstufen“ (40 Objekte/400 Immobilien) vs. 01 §9 (15 Meilensteine) | 02 führt zusätzlich M16 (Rivalen-Benchmark, „nicht erwartet“); 01 nennt ihn nicht, 02 §4.2 nennt „400+ Immobilien“ als „Nicht als Ziel“. | **offen** | Prüfen, ob M16 entfallen soll. |
+
+## C. Geprüft ohne Befund
+
+- Zahlen/Begriffe: Kaufnebenkosten 3,5–6,5 % und 16-Länder-Tabelle, 12.588 Gebiete, Mietanrechnung 60–80 %, Beleihung < 80 %, Puffer 10–20 T€, Spekulationsfrist 10 Jahre, 15-%-Grenze, AfA-Sätze, Status-Flags (BELEGT/ABGELEITET/GESCHÄTZT/DESIGN), Hilfestufen und Marktschwierigkeit (Leicht/Mittel/Schwer/Experte), Zeitmodell (Monatstakt, „Weiter“-Modi, Stopp-Regeln 12/6/3), Undo nur im Monat, Nettovermögen-Definition.
+- Technik: Leistungsbudget (5 ms/Monat, 480 Monate < 2 s), Determinismus-Hash in Node + 3 Browsern ab P1, Verbote in `sim-core`, ECharts 6 / TanStack Table v9 / Tailwind 4 in 03 stimmen mit 04 überein.
+- Screens: 43 Screens (S-01…S-43) und 14 Überlagerungen (O-01…O-14) konsistent; Phasen der übrigen Screens (S-12, S-15, S-26, S-29, S-32, S-33–S-35, S-38–S-43) stimmen mit 06 überein.
+- Sprache: keine Gendersonderzeichen, Du-Anrede in 02/03.

@@ -14,3 +14,13 @@ Alles unten blockiert nichts Akutes; ich arbeite mit dem genannten Standard weit
 | Q8 | **Wann willst du die Freigabe des Masterplans** und P0 starten? Danach ginge es mit Code los. | nach Q1 | – |
 
 Nicht gefragt, aber von dir bei Gelegenheit zu klären (spätere Phasen): O13 Monetarisierung, O14 Lizenzen, O18 Mobile-Konten, O19 Spielname.
+
+## Nachtrag nach Querlesen (27.11.)
+
+| # | Frage | Mein Standard |
+|---|---|---|
+| Q9 | Standardregion für Persona „Einsteiger 2026“ und Tests: **Stadt Bremen** (statt bisher Leipzig)? | ja |
+| Q10 | Lernstufen (5 Stufen in 03) und Lernpfad-Kapitel (10 in 01) sind nicht deckungsgleich. Soll ich die Zuordnung vorschlagen (Steuern bekommt ein eigenes Kapitel)? | ja, Vorschlag in der Plan-Konsolidierung |
+| Q11 | Plan-Konsolidierung (Querlese-Beschlüsse in 02/03/06 einarbeiten) jetzt machen oder erst nach deiner Durchsicht? | jetzt |
+
+Die Sachentscheidungen O-1…O-19 des Querlesens stehen in `plan/10-…` §5 – bei Widerspruch bitte melden.

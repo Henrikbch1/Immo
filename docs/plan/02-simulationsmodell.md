@@ -141,7 +141,7 @@ sim-core/src/
 ├─ offers/        Angebotsgenerator, Exposé-Schönung, Konkurrenz, Verfall, Off-Market (2.3)
 ├─ acquisition/   Kaufprozess-Automat, Aufdeckung, Verhandlung, Notar, Nutzen-Lasten-Wechsel (2.4)
 ├─ sale/          Verkaufsprozess, Notverkauf, Zwangsversteigerung (2.16, Teil 2)
-├─ bank/          Bankprofile, Kreditprüfung P0–P9, Konditionen, Darlehen, Anschluss, Sondertilgung, Dispo (2.6)
+├─ bank/          Bankprofile, Kreditprüfung PS0–PS9, Konditionen, Darlehen, Anschluss, Sondertilgung, Dispo (2.6)
 ├─ player/        Haushalt, Einkommen, Lebenshaltung, Rechtsträger (privat/GmbH/Holding), Zeitbudget, Wissen, Netzwerk (2.7)
 ├─ lease/         Mieter-Automat, Bewerber, Mietverträge, Mieterhöhung, Zahlungsstörung, Kündigung, Kaution (2.8)
 ├─ opex/          Betriebskosten-Positionen, Umlage-Prüfkette, Heizkosten, CO₂, NKA, Fristen (2.9)
@@ -231,7 +231,7 @@ type Cents  = number & { readonly __b: 'Cents' };  // Integer, Number.isSafeInte
 type Bp     = number & { readonly __b: 'Bp' };     // Basispunkte: 1 bp = 0,01 %; 10_000 = 100 %
 type Qm100  = number & { readonly __b: 'Qm100' };  // Fläche in 1/100 m² (Integer)
 type CentProQm = number & { readonly __b: 'CentProQm' }; // z. B. 1.862 = 18,62 €/m²
-type MonthIndex = number;                          // jahr * 12 + (monat − 1); Nov. 2026 = 24.322
+type MonthIndex = number;                          // (jahr − 2000) * 12 + (monat − 1), absolut ab 2000-01 (→ 04 §3.3); Nov. 2026 = 322
 ```
 
 - **MUSS:** Zustand, Buchungen und Parameter enthalten nur Integer. Zwischenrechnungen dürfen Float sein (nur `+ − × ÷`,
@@ -1019,7 +1019,7 @@ interface Spieler { personen: Person[];                        // 1–2 Erwachse
 
 **Entscheidungen.** Sparen/Umbuchen, Lebenshaltung anpassen, Depot verkaufen, Weiterbildung, Netzwerk pflegen, Nebenjob, Delegation, Rechtsträger gründen (P7).
 **Ereignisse.** Gehalts-/Lebensereignisse, Beziehung wächst/verfällt, AP-Engpass-Hinweis. **LÜCKEN.** LR-17, LR-51, LR-56. **Tests.** Σ Liquidität = Ledger; AP nie negativ (INV-31); Lebensereignisse deterministisch je `(PLAYER, monat, k)`; S9-Tempo-Plausibilität (14 §5.3).
-**Phase.** P3 (Profile S1–S6, Einkommen, Lebenshaltung, AP-Basis), P5 (Weiterbildung, Netzwerk, Delegation), P7 (Rechtsträger).
+**Phase.** P3 (Profile S1–S6, Einkommen, Lebenshaltung, AP-Basis), P4 (Delegation, → 06 Paket 4.9), P5 (Weiterbildung, Netzwerk), P7 (Rechtsträger).
 
 ### 2.8 Vermietung (`lease/`)
 

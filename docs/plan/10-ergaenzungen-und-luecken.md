@@ -53,3 +53,26 @@ Nicht in 00–08 ausgearbeitet. Priorität: **K** = vor der genannten Phase zwin
 | `docs/UEBERGABE.md` | Stand, offene Punkte | aktualisiert |
 
 (Die inhaltliche Querlese-Prüfung von 02/03 gegen 00/01/04/06 ist noch nicht gemacht – siehe `RUECKFRAGEN.md` Q1.)
+
+## 5. Entscheidungen aus dem Querlesen 02/03 (Standard, ohne Rückfrage; Bericht `../berichte/querlese-02-03.md`)
+
+10 Widersprüche wurden direkt behoben, 19 waren offen. Für die offenen gilt bis zu deinem Widerspruch:
+
+| Fall | Entscheidung | Umsetzen in |
+|---|---|---|
+| O-1 `rulesVersion` | **`rulesVersion` = Rechtsjahrgang** (00/01/04); die Engine-/Pipeline-Version in 02 heißt **`engineVersion`** | 02 §1.7, ADR 0009 (P0) |
+| O-2 Krisenmodell | 02 §2.17 (GRÜN…SCHWARZ, Reichweite in Monaten) ist **technische Quelle**; 03 §3.6 übernimmt die Stufen und Schwellen; Euro-Puffer (01) nur als Startwert-Hilfe | 03 §3.6 (P3) |
+| O-3 Telemetrie | **aus** bis P8; Opt-in frühestens danach; Schalter in S-04 erst dann | 03 |
+| O-4 Storybook | optional (04 gilt); Komponentenkatalog über Playwright-Screens | 03 §4.8 |
+| O-5 Tagebuch | P6 (06 gilt) | 03 §1.1/§8 |
+| O-6 Steuer in P3 | **keine** Steuerrechnung in P3 (06 gilt); Onboarding-Beispiel ohne „nach Steuern“ | 03 §3.8.2 |
+| O-7 Splitting S2 | in P3 nur Profildaten, Wirkung ab P4/P5 | 01 §5.2 Hinweis |
+| O-8 Zeit | **Aktionspunkte (AP)** maßgeblich; Anzeige in Stunden entfällt | 01 §6 |
+| O-9 Teilkrise P3 | als Vorstufe erlaubt (Dispo, Rücklastschrift); 06 um Hinweis ergänzen | 06 P3 |
+| O-12/18 Onboarding P3 | Onboarding K2 mit **Skript-Platzhaltern** für Suchauftrag, Checkpoint, Review; eigenes Arbeitspaket „3.x Onboarding-Szenario“ in 06 ergänzen | 06, 03 §3.8.1 |
+| O-14 Standardregion | Persona S1 und Test-Fixture: **Stadt Bremen** (R01) statt Leipzig | 03 S-02 |
+| O-15 „die Spielerin“ | auf „du“/neutral umformulieren (E8) | 03 |
+| O-19 M16 | entfällt | 02 §2.18 |
+| O-10, O-11, O-13, O-16, O-17 | offen bis P0 bzw. P3-Planung (Komponentenspezifikation K-02/28/29, Stufe↔Kapitel, Konten, Phasenzuordnung S-14/S-27, Replay-Lader-Formulierung) | – |
+
+Diese Anpassungen sind **beschlossen, aber noch nicht in 02/03/06 eingearbeitet** (sonst Gefahr neuer Brüche); sie gehören in ein Sonnet-Arbeitspaket „Plan-Konsolidierung“ vor P0.

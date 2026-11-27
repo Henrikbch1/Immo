@@ -86,7 +86,7 @@ W  ═════════════════════════�
 | 3.2 | Regionalmarkt v1 + Angebotsgenerator (ETW; sichtbar vs. verdeckt; Exposé-Schönung) | Angebote plausibel je Region (Kalibrierungsband) |
 | 3.3 | Spieler/Haushalt (Startprofile S1–S6 inkl. „Mein echtes Profil“) | Startassistent in ≤ 3 Schritten |
 | 3.4 | Kaufprozess-Automat (Besichtigung, Unterlagen, Gebot, Notar, Übergang) mit Dauern/Kosten | Tracker zeigt realistische Monate |
-| 3.5 | Bank v1: Profile A/B, Prüfschritte P0–P6, Begründungen, Konditionen | jede Absage mit Code + Zahlen + Erklärung |
+| 3.5 | Bank v1: Profile A/B, Prüfschritte PS0–PS6 und PS8/9 (PS7 Portfolio folgt in P5), Begründungen, Konditionen | jede Absage mit Code + Zahlen + Erklärung |
 | 3.6 | Vermietung v1: Inserat, Bewerber, Auswahl, Vertrag, Mietzahlung; Hausgeld | Wohnung nach Kauf vermietbar |
 | 3.7 | UI: Cockpit, Zeitleiste/„Weiter“, Posteingang, Monatsbericht, Markt (Liste + Kreis-Karte), Exposé, Kalkulator (Bierdeckel + Vollkalkulation ohne Steuer), Finanzierungsanfrage, Kauf-Tracker, Objekt-Detail (Basis) | Screen-DoD aus `03-…` erfüllt |
 | 3.8 | Erklär-Karte, Entscheidungsdialog mit Folgenvorschau, Prüfschritt für teure Aktionen, Undo im Monat | auf allen Kennzahlen/Aktionen verfügbar |
