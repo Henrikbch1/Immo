@@ -46,7 +46,7 @@ Spalten: **Wert** · Status (`B` = Sekundärquelle, `C` = unklar/widersprüchlic
 | Mietrecht II | Kabinett 29.04.2026, 1. Lesung Juli 2026; **Beschluss nicht belegt** → Politik-Ereignis `zukünftig`, kein Rechtsstand | C |
 | CO₂-Preis | 2026: 55–65 €/t; 2027: Korridor-Verlängerung **nur als Entwurf** belegt | B/C |
 | EZB-Einlagesatz / Bauzins 10 J. | 2,50 % (seit 16.09.2026) / ≈ 4,3 % (Interhyp 4,3; Dr. Klein 4,29; Nov. 2026) | A-/B |
-| ESt-Tarif 2026 | Grundfreibetrag 12.348 €; Zone 2 (914,51·y+1.400)·y; Zone 3 (173,10·z+2.397)·z+1.034,87; Zone 4 0,42·x−11.135,63; Zone 5 0,45·x−19.470,38 | Zone 1–2 A, Rest B → **vor Verwendung gegen § 32a prüfen** |
+| ESt-Tarif 2026 | Grundfreibetrag 12.348 €; Zone 2 (914,51·y+1.400)·y; Zone 3 (173,10·z+2.397)·z+1.034,87; Zone 4 0,42·x−11.135,63; Zone 5 0,45·x−19.470,38 | **A – am 27.11.2026 gegen den Gesetzestext (gesetze-im-internet.de, § 32a) geprüft; Rundung: zvE und Steuerbetrag je auf volle Euro abgerundet** |
 | Soli-Freigrenze 2026 | 20.350 € / 40.700 € | B |
 | Degressive AfA § 7 Abs. 5a | 5 %, Bau-/Erwerbszeitfenster 01.10.2023–30.09.2029; Verlängerung nicht gefunden | B |
 | WEG-Stimmrecht § 25 Abs. 2 | Kopfprinzip, durch Vereinbarung änderbar | B |

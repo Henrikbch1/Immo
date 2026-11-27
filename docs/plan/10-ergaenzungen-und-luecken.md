@@ -20,7 +20,7 @@
 | D2 | Nachbeleihung/Cash-out (LR-20) | optionale **Profi-Mechanik ab P5**, als `[DES]` gekennzeichnet, ausschaltbar | im Vault unbelegt |
 | D3 | Schrift (03, Punkt 1) | Inter (OFL) bleibt Standard; Entscheidung in P0 per Lizenzvermerk festhalten | geringe Wirkung |
 | D4 | Telemetrie (03, Punkt 4) | **aus**, wie O16; später Opt-in für anonyme Spieldaten prüfen | Privatsphäre, R16 |
-| D5 | ESt-Tarif 2026 (LR-21) | Werte aus Webrecherche (siehe `09` §8) als `[WEB→W]` übernehmen, im Vault belegen, dann `[BEL]` | schließt Kernlücke für P4 |
+| D5 | ESt-Tarif 2026 (LR-21) | **geprüft gegen § 32a (27.11.2026)**, kann als `[BEL]` in den Vault (Batch W-A5) | schließt Kernlücke für P4 |
 
 Offen für dich: nur das, was in `RUECKFRAGEN.md` steht.
 
