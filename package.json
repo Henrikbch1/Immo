@@ -14,7 +14,8 @@
     "format": "biome check --write .",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "vitest run",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "balance": "node tools/balance/balance.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
