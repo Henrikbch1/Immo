@@ -9,7 +9,7 @@
 
 - **Repo:** `henrikbch1/immo`, Branch `claude/immobilien-sim-refactor-rtnhvk` (alles committet und gepusht).
 - **Wissensbasis:** `henrikbch1/ic` (Obsidian-Vault, nur gelesen, nichts geändert).
-- **Phase:** Planung fast fertig. Noch kein neuer Spielcode geschrieben. Der alte Prototyp (`index.html`, `root/`) liegt unverändert da
+- **Phase:** Planung vollständig (27.11.2026), wartet auf deine Freigabe. Noch kein neuer Spielcode geschrieben. Der alte Prototyp (`index.html`, `root/`) liegt unverändert da
   und wird in P0 nach `legacy/prototyp-v0/` archiviert.
 
 ### Fertig
@@ -17,13 +17,11 @@
 |---|---|
 | Recherche (9 Dokumente, ~7.000 Zeilen) | `docs/research/01` Audit Prototyp · `10` Finanzierung/Bank · `11` Steuern/Recht/Regeln · `12` Bewirtschaftung · `13` Akquise/Markt/Gebiete · `14` Fallstudien/Strategie/immocation · `20` Marktdaten/Recht 2026/Datenquellen · `21` Game-Design/UX · `22` Tech-Stack |
 | Plan | `docs/plan/00-MASTERPLAN.md` (Einstieg) · `01` Spieldesign · `04` Technik · `05` Daten & Wissen · `06` Roadmap · `07` KI-Workflow · `08` Entscheidungen & Risiken |
-| Plan (Teile) | `02-simulationsmodell.md`: Überblick + Querschnitt fertig · `03-ux-ui.md`: IA + alle Screens + erste Overlays fertig |
+| Plan (fertig 27.11.) | `02-simulationsmodell.md` (1.547 Zeilen: Querschnitt, 18 Engines, Invarianten INV-01–37, Regressionstests R-01–10, Kalibrierung, Lücken-Register LR-01–56, Umsetzungsreihenfolge) · `03-ux-ui.md` (2.148 Zeilen: IA, alle Screens, Flows, Design-System K-01–26, Sprachstil, WCAG, UX-QS) |
 
-### In Arbeit (am 27.11. an Sonnet-Agents gegeben)
-- `02-simulationsmodell.md`: §2 Engines (2.1–2.18), §3 Balancing-Invarianten, §4 Kalibrierung, §5 Lücken-Register, §6 Umsetzungsreihenfolge
-- `03-ux-ui.md`: §3.6–3.10 Flows, §4 Design-System, §5 Sprachstil, §6 Barrierefreiheit, §7 UX-QS, §8 UI-Reihenfolge
-
-**Prüfen im neuen Chat:** `grep -n '^## ' docs/plan/02-simulationsmodell.md docs/plan/03-ux-ui.md` – fehlen Abschnitte, diese nachziehen (Sonnet reicht).
+### Offene Punkte aus 02/03 (beim Querlesen klären)
+- 02: viele Zahlen noch Platzhalter `[GES]`/`[DES]` (Zinsaufschläge, Lebenshaltungspauschalen, Kalibrierungsbänder) → Sensitivitätsanalyse + fach-pruefer; ESt-Tarif-Koeffizienten 2026 fehlen (LR-21); Nachbeleihung/Cash-out als unbelegte Mechanik markiert; WEG-Stimmrecht: gesetzlicher Regelfall ist das Kopfprinzip – Doc nutzt MEA als [DES], offen in LR-42.
+- 03: Schriftlizenz (Inter/Plex), Kontraste im Design-Review nachmessen, Gender-Regel (5.2), Telemetrie-Opt-in, Schwellen der Krisenstufen, Plugin-Skillnamen bei Installation prüfen; Komponenten-IDs K-21/22/25/27 noch frei.
 
 ---
 
@@ -56,7 +54,7 @@ Offene Entscheidungen mit Empfehlung: `docs/plan/08-entscheidungen-und-risiken.m
 
 ## 4. Nächste Schritte
 
-1. **Abschluss Plan:** 02/03 auf Vollständigkeit prüfen, kurz querlesen (Widersprüche zu 00/01/04/06?), committen.
+1. **Abschluss Plan:** 02/03 querlesen (Widersprüche zu 00/01/04/06?), offene Punkte aus §1 klären, committen.
 2. **Deine Freigabe** des Masterplans (`docs/plan/00-MASTERPLAN.md`) – Änderungswünsche gern als Liste.
 3. **P0 Fundament** starten (`docs/plan/06-roadmap.md`): Legacy archivieren, Monorepo, CLAUDE.md ausbauen, ADRs, CI, App-Shell,
    Plugins installieren (frontend-design, Design, code-review, playwright, A11y Enforcer).
@@ -89,10 +87,10 @@ Wir bauen das Immobilien-Investment-Trainingsspiel im Repo henrikbch1/immo neu
 und docs/plan/00-MASTERPLAN.md. Große Dateien bitte nur abschnittsweise lesen.
 
 Aufgabe jetzt:
-1. Prüfe, ob docs/plan/02-simulationsmodell.md und docs/plan/03-ux-ui.md vollständig sind
-   (Gliederung laut UEBERGABE.md §1). Fehlende Abschnitte ergänzen – gib das an einen
-   Sonnet-Subagent ab.
-2. Lies 02 und 03 nur quer auf Widersprüche zu 00/01/04/06 und behebe sie.
+1. Der Plan ist vollständig. Lies 02 und 03 nur abschnittsweise quer auf Widersprüche
+   zu 00/01/04/06 und behebe sie (gib das an einen Sonnet-Subagent ab).
+2. Kläre die „Offenen Punkte aus 02/03“ aus UEBERGABE.md §1, soweit ohne mich möglich;
+   den Rest sammle als Fragen an mich.
 3. Committe und pushe. Fasse mir in max. 10 Zeilen zusammen, was ich freigeben soll.
 
 Spar Kosten: max. 2 Subagents parallel, Sonnet/Haiku für Umsetzung und Mechanik,
