@@ -25,6 +25,8 @@
   --color-info-tint: var(--status-info-tint);
   --color-design: var(--status-design);
   --color-design-tint: var(--status-design-tint);
+  --color-series-1: var(--series-1);
+  --color-series-2: var(--series-2);
 
   --font-sans: "Inter Variable", "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
@@ -63,6 +65,9 @@
   --status-info-tint: #e8eefd;
   --status-design: #6a3fa8;
   --status-design-tint: #f1eafb;
+  /* Datenfarben (validiert mit dataviz/validate_palette.js gegen bg.page) */
+  --series-1: #1f4fd8;
+  --series-2: #c2570c;
   --elevation-1: 0 1px 2px rgb(0 0 0 / 0.08);
   --focus-width: 2px;
 }
@@ -89,6 +94,8 @@
   --status-info-tint: #16264a;
   --status-design: #c4a4f0;
   --status-design-tint: #2a1e40;
+  --series-1: #338ced;
+  --series-2: #e76624;
   --elevation-1: 0 1px 2px rgb(0 0 0 / 0.4);
 }
 
@@ -115,6 +122,8 @@
   --status-info-tint: #ffffff;
   --status-design: #4b2580;
   --status-design-tint: #ffffff;
+  --series-1: #0a2f9e;
+  --series-2: #8a3a00;
   --elevation-1: none;
   --focus-width: 3px;
 }

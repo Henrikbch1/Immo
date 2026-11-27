@@ -15,6 +15,20 @@ export function Platzhalter({ bereich }: { bereich: Bereich }) {
           Zur Startseite
         </Link>
       </div>
+      {bereich.id === 'finanzen' ? (
+        <section aria-labelledby="werkzeuge" className="mt-6">
+          <h2 id="werkzeuge" className="text-lg font-semibold">
+            Schon nutzbar
+          </h2>
+          <Link
+            to="/rechner/darlehen"
+            className="block rounded-lg border border-border-decor p-4 text-fg no-underline hover:border-border-control"
+          >
+            <span className="block font-semibold">Darlehensrechner</span>
+            <span className="block text-sm text-muted">Rate, Tilgungsplan, Restschuld und Sondertilgung</span>
+          </Link>
+        </section>
+      ) : null}
     </div>
   );
 }

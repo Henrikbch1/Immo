@@ -15,6 +15,12 @@ export function Start() {
         <h2 id="stand" className="mt-0 text-lg font-semibold">
           Was du in dieser Version siehst
         </h2>
+        <p className="mt-0">
+          <Link to="/rechner/darlehen" className="font-semibold text-info underline">
+            Neu in Sprint Z1: Darlehensrechner
+          </Link>{' '}
+          – Rate, Tilgungsplan, Restschuld nach der Zinsbindung und Sondertilgung.
+        </p>
         <ul className="mb-0 space-y-1 pl-5">
           <li>App-Gerüst mit Navigation für Desktop, Tablet und Handy</li>
           <li>Helles, dunkles und kontrastreiches Thema (Menü › Einstellungen)</li>

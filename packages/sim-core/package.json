@@ -12,6 +12,8 @@
   "devDependencies": {
     "@immo/config": "workspace:*",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "decimal.js": "catalog:",
+    "fast-check": "catalog:"
   }
 }

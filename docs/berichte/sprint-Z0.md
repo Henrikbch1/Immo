@@ -1,7 +1,7 @@
 # Sprint Z0 – Fundament + Deploy-Pipeline (27.11.2026)
 
 ## Gebaut
-- Alter Prototyp nach `legacy/prototyp-v0/` (Tag `prototyp-v0` auf dem letzten Prototyp-Commit), `.idea/` ignoriert.
+- Alter Prototyp nach `legacy/prototyp-v0/` (Tag `prototyp-v0` auf Commit `959c984` nur lokal – Tag-Push ist in der Cloud-Umgebung gesperrt), `.idea/` ignoriert.
 - pnpm-Workspace mit zentralen Versionen (`catalog:`), Pakete `config`, `sim-core`, `ui`, `apps/web`.
 - TypeScript 7 strict, Biome 2 (Lint + Format), Vitest 5; **`pnpm verify`** = lint + typecheck + test + build.
 - Determinismus-Verbote für `sim-core` (`tools/check-sim-core.mjs`), erstes Kernmodul `kalender.ts` (MonthIndex) mit Tests.

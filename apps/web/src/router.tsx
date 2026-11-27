@@ -1,4 +1,5 @@
 import { createHashHistory, createRootRoute, createRoute, createRouter } from '@tanstack/react-router';
+import { Darlehensrechner } from './seiten/Darlehensrechner.tsx';
 import { Einstellungen } from './seiten/Einstellungen.tsx';
 import { NichtGefunden } from './seiten/NichtGefunden.tsx';
 import { Platzhalter } from './seiten/Platzhalter.tsx';
@@ -15,6 +16,11 @@ const einstellungen = createRoute({
   path: '/einstellungen',
   component: Einstellungen,
 });
+const darlehen = createRoute({
+  getParentRoute: () => wurzel,
+  path: '/rechner/darlehen',
+  component: Darlehensrechner,
+});
 const quellen = createRoute({ getParentRoute: () => wurzel, path: '/quellen', component: Quellen });
 
 // Spielbereiche (03 §1.3): /spiel/$spielId/<bereich>. Bis Z5 nur Platzhalter mit Leerzustand (K-18).
@@ -26,7 +32,7 @@ const bereichsRouten = BEREICHE.map((b) =>
   }),
 );
 
-const routeTree = wurzel.addChildren([start, einstellungen, quellen, ...bereichsRouten]);
+const routeTree = wurzel.addChildren([start, einstellungen, quellen, darlehen, ...bereichsRouten]);
 
 // Hash-Routing: Reload auf Unterseiten funktioniert auf GitHub Pages und offline ohne 404 (11 §2).
 export const router = createRouter({ routeTree, history: createHashHistory(), defaultPreload: 'intent' });

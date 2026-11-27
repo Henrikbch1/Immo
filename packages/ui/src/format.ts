@@ -36,3 +36,23 @@ export function formatProzentAusBp(bp: number, nachkomma = 2): string {
 export function formatMonat(jahr: number, monat: number): string {
   return monatFmt.format(Date.UTC(jahr, monat - 1, 1));
 }
+
+/**
+ * Deutsche Zahleneingabe → Zahl: „300.000“, „4,5“, „1.234,56 €“, „2 %“. Ungültig → null.
+ * Punkte sind Tausendertrenner, das Komma ist das Dezimalzeichen.
+ */
+export function parseDeZahl(eingabe: string): number | null {
+  const s = eingabe.replace(/[\s\u00A0€%]/g, '');
+  if (!/^-?(\d{1,3}(\.\d{3})+|\d+)(,\d+)?$/.test(s)) return null;
+  return Number(s.replace(/\./g, '').replace(',', '.'));
+}
+
+/** Monate → „34 Jahre 9 Monate“. */
+export function formatJahreMonate(monate: number): string {
+  const j = Math.floor(monate / 12);
+  const m = monate % 12;
+  const teile: string[] = [];
+  if (j > 0) teile.push(`${j}${NBSP}${j === 1 ? 'Jahr' : 'Jahre'}`);
+  if (m > 0 || j === 0) teile.push(`${m}${NBSP}${m === 1 ? 'Monat' : 'Monate'}`);
+  return teile.join(' ');
+}
