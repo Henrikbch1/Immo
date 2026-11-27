@@ -14,6 +14,7 @@
 | E4 | 26.11.2026 | **Start Nov. 2026 + simulierte Zukunft + historische Szenarien** | aktuelles Training + „Was wäre wenn 2012/2022“ |
 | E5 | 26.11.2026 | **Alten Code verwerfen** (Ideen bleiben) | Audit: Architektur- und Balancing-Fehler (`../research/01-…`) |
 | E7 | 27.11.2026 | **Fokusländer Niedersachsen, NRW, Bremen** (O9 erledigt) | Vorgabe Auftraggeber; Details `09-fokuslaender.md` |
+| E9 | 27.11.2026 | **Demo auf GitHub Pages**, Sprint-Takt Z0–Z21 (`11-umsetzung-sprints.md`) | Auftraggeber will jede Stufe live testen |
 | E8 | 27.11.2026 | **Kein Gendern** | Vorgabe Auftraggeber; ersetzt 03 §5.2-Regel |
 | E6 | 26.11.2026 | **IC-Vault = Single Source of Truth** für Fakten, Export-Snapshot ans Spiel | Quellenpflicht, Trennung Fakt/Spielmechanik |
 

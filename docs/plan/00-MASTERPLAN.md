@@ -46,6 +46,7 @@ Flip mit Gutachten-Bonus bringt +46 T€ in 7 Monaten, 23 Objekte und 7,8 Mio. �
 | E4 | Marktverlauf | **Start heute (Nov. 2026) mit simulierter Zukunft + historische Szenarien** | stochastisches, seed-basiertes Marktmodell + echte Zeitreihen (Bundesbank, Destatis, GREIX …) |
 | E5 | Alter Code | **verwerfen** (Ideen bleiben, siehe Audit §7) | Archiv-Tag `prototyp-v0`, Code nach `legacy/` |
 | E7 | Fokusländer | **Niedersachsen, NRW, Bremen** (27.11.2026) | Datenhärtung und Landesregeln zuerst dort; übrige Länder mit Status GESCHÄTZT |
+| E9 | Demo-Hosting | **GitHub Pages** je Sprint (27.11.2026); Cloudflare erst für Release | Live-Demo nach jedem Sprint, Abnahme per Checkliste |
 | E8 | Sprache | **kein Gendern** (27.11.2026) | normale Schreibweise, neutral wo natürlich |
 | E6 | Wissensquelle | **IC-Vault = Single Source of Truth** für Fakten und Parameter | Export-Datenpaket IC → Spiel; Lücken werden im Vault geschlossen |
 
@@ -191,6 +192,8 @@ Vollständige Risikoliste: `08-entscheidungen-und-risiken.md`.
 | `08-entscheidungen-und-risiken.md` | Entscheidungslog (ADR-Liste), offene Entscheidungen mit Empfehlung, Risiken |
 | `09-fokuslaender.md` | Niedersachsen, NRW, Bremen: Landesregeln, Datenquellen, Referenzregionen, Objektarchetypen, Szenario-Datenbedarf |
 | `10-ergaenzungen-und-luecken.md` | Neue Entscheidungen (E7, E8), Plan-Lücken G-01…G-10, Unstimmigkeiten |
+| `11-umsetzung-sprints.md` | **Umsetzung in Sprints Z0–Z21**: je ein Chat/5-h-Fenster, Live-Demo auf GitHub Pages, Abnahme-Checkliste, Start-Prompt |
+| `../STATUS.md` | aktueller Stand, nächster Sprint |
 | `../research/01–22` | Recherche-Grundlagen (Audit, IC-Fachspezifikationen, Web-Recherche) |
 
 ---

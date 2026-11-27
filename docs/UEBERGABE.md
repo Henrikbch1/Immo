@@ -1,5 +1,7 @@
 # Übergabe – Stand 27.11.2026 (ergänzt)
 
+> **Aktueller Einstieg:** `docs/STATUS.md` und `docs/plan/11-umsetzung-sprints.md` (Start-Prompt je Sprint). Ältere Hinweise unten sind Historie.
+>
 > **Neu (27.11., zweite Sitzung):** E7 Fokusländer Niedersachsen/NRW/Bremen, E8 kein Gendern → `docs/plan/09-fokuslaender.md`, `docs/plan/10-ergaenzungen-und-luecken.md`, Webrecherchen `docs/research/23`, `24` (ungeprüft!), offene Fragen `docs/RUECKFRAGEN.md`. Branch dieser Sitzung: `claude/compassionate-hypatia-ty5f91`.
 
 

@@ -30,3 +30,11 @@ Die Sachentscheidungen O-1…O-19 des Querlesens stehen in `plan/10-…` §5 –
 | # | Frage | Standard |
 |---|---|---|
 | Q12 | Für die Primärprüfung NDS/Bremen fehlen noch Hosts: `www.mw.niedersachsen.de`, `www.verkuendung-niedersachsen.de`, `www.voris.niedersachsen.de`, `www.bremen.de`, `www.rathaus.bremen.de`, `www.transparenz.bremen.de`. Freischalten (ich schlage es per Umgebungs-Änderung vor, du bestätigst im Dialog)? | ja, beim nächsten Batch |
+
+## Nachtrag Umsetzung/Demo (27.11.)
+
+| # | Frage | Standard |
+|---|---|---|
+| **Q13** | **Vor Z0:** GitHub Pages aktivieren (*Settings → Pages → Source: GitHub Actions*). Deploy-Weg: **A** Sprint-Branch → PR nach `main` → Merge (Pages deployt von `main`) oder **B** Branch `claude/compassionate-hypatia-ty5f91` in *Settings → Environments → github-pages* als Deploy-Branch erlauben? | A |
+| **Q14** | Ist das Repo öffentlich oder privat? Bei **privat** braucht Pages einen bezahlten GitHub-Plan, und die Seite ist trotzdem öffentlich im Web. Dürfen aggregierte Vault-/Datenpaket-Inhalte (Regeln, Kennzahlen mit Quelle) in die öffentliche Demo? | ja, nur aggregierte Daten mit Quellenvermerk; „Mein echtes Profil“ bleibt lokal |
+| Q15 | Zielzeitpunkt/Tempo: ein Sprint pro 5-h-Fenster, also grob 1–2 Sprints pro Tag. Reihenfolge Z0→Z21 so recht (Meilenstein „Erste Wohnung“ = Z8)? | ja |
