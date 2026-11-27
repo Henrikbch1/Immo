@@ -642,3 +642,478 @@ type Wissensstand =
 - **Historie:** spaltenorientiert (Int32/Float64-Arrays), Monatswerte der letzten 120 Monate, ältere als Jahreswerte;
   Buchungsdetails für laufendes und zwei Vorjahre (NKA- und Steuerfristen), ältere aggregiert.
 - **Migration:** reine Vorwärtsfunktionen je `schemaVersion` mit Fixture-Tests (→ 22 §4.3).
+
+---
+
+## 2. Engines
+
+**Einheitliches Raster** je Engine: Zweck · Zustand · Ablauf (Pipeline-Schritte aus 1.5) · Kernlogik · Parameter (mit Status) ·
+Spielerentscheidungen · Ereignisse/Posteingang · LÜCKEN (→ Register, Abschnitt 5) · Tests (→ Abschnitt 3/4) · Phase.
+Zentrale Formeln stehen hier; Herleitungen und Randfälle per Verweis. Parameter-IDs folgen 1.7 (`<engine>.<name>`).
+Alle Spannen `[GES]`/`[DES]` sind Platzhalter mit Pflicht-`spanne` (1.7 Regel 2) und laufen in die Sensitivitätsanalyse (4.3).
+
+### 2.1 Makro & Marktpfade (`macro/`)
+
+**Zweck.** Exogene nationale Pfade: Bauzins, Inflation, Preis-, Miet-, Baupreisindex. Dreimodus: historisches Replay,
+stochastisches Modell ab Nov. 2026, Szenario-Overrides. Keine eingebaute Aufwärtsgarantie (Leitplanke 6).
+
+**Zustand.**
+```ts
+interface MakroZustand {
+  modus: 'REPLAY' | 'MODELL';                         // Replay bis Szenario-Startmonat bzw. historische Szenarien
+  regime: 'NORMAL' | 'BOOM' | 'STRESS'; regimeSeit: MonthIndex;   // Markov-Kette im Monatstakt
+  leitzinsBp: Bp; bund10Bp: Bp; spreadBp: Bp;         // Bauzins10 = Bund10 + Spread (Bank-Aufschlag, mean-reverting)
+  bauzins10Bp: Bp;                                    // effektiv, Konvention Bundesbank SUD119/SU0046 (Bruch 2003 markiert)
+  vpiIdx: number; vpiJahresrateBp: Bp;                // Indizes als Integer ×100 (Basis 100,00 = 10.000)
+  preisIdxNat: number; mietIdxNat: number; baupreisIdx: number;
+  overrides: Array<{ var: MakroVar; op: 'SET'|'ADD'|'MUL'; wert: number; ab: MonthIndex; dauer: number; abklingBp: Bp }>;
+}
+```
+
+**Ablauf.** Schritt B02 (`MACRO`-Strom, ein Wurfvektor je Monat). Replay: Monatswert aus `zeitreihen/*.json`
+(Quartalswerte in log-linearer Interpolation, deterministisch). Modell: Zustandsübergang unten. Overrides werden nach
+dem Modellschritt angewandt (Szenario hat Vorrang). Der Pfad ist **nicht** vom Spieler abhängig (INV-18).
+
+**Kernlogik (Modellvorschlag).** Regime-Switching mit regimeabhängigem AR(1) und Mean-Reversion, korrelierte Innovationen:
+```text
+P(regime_{t+1} = j | regime_t = i) = Π[i][j]                      // 3×3, Verweildauer NORMAL ≈ 5–8 J., STRESS ≈ 1–3 J. [GES→ABG]
+bund10_{t+1}   = bund10_t + κ_b·(μ_b[r] − bund10_t) + σ_b[r]·ε₁
+spread_{t+1}   = spread_t + κ_s·(μ_s − spread_t) + σ_s·ε₂        // Bank-Aufschlag; Kreditverknappung in STRESS: μ_s ↑
+π_{t+1}        = π_t + κ_π·(μ_π[r] − π_t) + σ_π·ε₃              // Inflationsrate, Ziel ≈ 2 % in NORMAL
+Δln P_nat,t+1  = α[r] − β_z·Δbauzins_t − β_π·(π_t − π̄) + ρ·Δln P_nat,t + σ_P·ε₄     // Zinswirkung + Momentum (Blase möglich)
+Δln M_nat,t+1  = λ·π_t + δ·(Δln P_nat,t) + σ_M·ε₅                // Mieten träge, an Inflation und verzögert an Preisen
+Δln B_nat,t+1  = π_t + ξ + σ_B·ε₆                               // Baupreisindex
+ε = L·z,  z ~ N(0,I) aus `MACRO`;  L = chol(Σ_corr)   (Σ_corr: Zins↔π +, Zins↔Preis −, π↔Miete +, Preis↔Bau +)
+```
+Nur `+ − × ÷`, `expDet`, `lnDet` (1.1, 1.6). Regimeübergang aus `u = Bernoulli`-Wurf je Zeile der Matrix (kategorial).
+STRESS koppelt an Zinsschock (Δbauzins > 150 bp/12 M) oder Preiskorrektur; BOOM an Momentum + niedrigen Zins.
+Kalibrierung (`tools/calibrate-makro`, Status `[ABG]`, Rechenweg im Paket): Bundesbank SUD119 + SU0046 (verkettet,
+Bruch 2003), Destatis VPI 61111, HPI 61262, GREIX (Lizenz klären, LR-03), VPI-Teilindex Nettokaltmiete; Regime-Label
+regelbasiert auf der Historie 1990–2026 (→ 20 §B.8, §B.9; 05 §5). Backtest: Historie liegt in P5–P95-Band der
+Monte-Carlo-Läufe (4.5).
+
+**Startzustand Nov. 2026** `[WEB→W]` (→ 20 Kurzfazit): Leitzins (Einlagesatz) 250 bp; Bund10 ≈ 350 bp; Bauzins10 eff. 400–450 bp
+(Startwert 430 bp, Spanne); VPI 2,8 % ggü. Vorjahr; Nettokaltmieten +1,9 %; GREIX ETW −0,2 % ggü. Vorjahr; vdp Neuvertragsmieten +3,5 %;
+Regime: NORMAL mit Tendenz STRESS (Zinsanstieg 2026). Ein Szenario kann Startregime und Overrides setzen.
+
+**Szenario-Dateiformat** (`szenarien/<id>.json`, JSON-Schema im Datenpaket, Hash in `meta.paramPackHash`):
+```jsonc
+{ "id": "H2-zinswende-2022", "schema": 1, "titel": "…", "lernziele": ["ZINSBINDUNG","ANSCHLUSS"],
+  "start": "2021-09", "ende": "2026-12", "modus": "HISTORISCH | MODELL | GEMISCHT",   // GEMISCHT: Replay bis `replayBis`, danach Modell
+  "makro": { "replayBis": "2026-11", "regimeStart": "NORMAL",
+             "overrides": [ { "var": "bauzins10", "op": "ADD", "wert": 200, "ab": "2027-03", "dauer": 12, "abkling": 3000 } ],
+             "schocks": [ { "typ": "ZINSSCHOCK", "ab": "2027-03", "staerkeBp": 200 } ] },
+  "regeln": { "jahrgangStart": "DE-2021", "politik": ["…"] },            // 2.14
+  "startprofil": "S1", "bank": "A | B | AUTO", "ereignisse": { "filter": ["…"], "dichte": "NORMAL" },
+  "ziele": [ "…" ], "bewertung": { "raster": "STANDARD" }, "sichtbarkeit": { "blindmodus": false } }
+```
+Szenario-Overrides sind Daten, kein Code (Leitplanke 7). Ein Szenario ohne `seedFix` erhält den Spiel-Seed.
+
+**Parameter.**
+
+| ID | Wert / Spanne | Status |
+|---|---|---|
+| `macro.start.*` (Zinsen, VPI, Indexraten Nov. 2026) | siehe oben | `[WEB→W]` LR-01/02 |
+| `macro.reihen.*` (Zins, VPI, HPI, Mietindex, Baupreis 1990/2003–2026) | Zeitreihen | `[BEL]` nach W; bis dahin `[GES]` LR-01..04 |
+| `macro.regime.matrix`, `κ`, `μ[r]`, `σ[r]`, `Σ_corr` | aus Kalibrierung | `[ABG]` (nach LR-01..03), Platzhalter `[GES]` |
+| `macro.preis.beta_zins` (Δln P je 100 bp Zins) | −3 … −8 % (modus −5 %) | `[GES]` aus Historie 2021–24 kalibrierbar |
+| `macro.spread.stress_aufschlag` | +30 … +120 bp | `[GES]` |
+| `macro.schock.katalog` (Zinsschock, Preiskorrektur, Inflationsschub) | Form + Stärken | `[DES]` |
+
+**Spielerentscheidungen.** Keine direkten; indirekt Zinsbindungswahl, Zeitpunkt von Kauf/Verkauf, Stresstest-Szenarien (`preview`, 2.18).
+
+**Ereignisse.** Nachrichtenstrom „Marktlage“ (Zins-/Preis-/Mietmeldungen mit Quelle `[DES]`, ohne Zukunft); Regimewechsel erscheint **nicht** direkt, nur als Indikatoren
+(Zukunft bleibt verdeckt, 1.9). STRESS erzeugt gehäuft Politik-/Bank-Ereignisse (2.14, 2.6).
+
+**LÜCKEN.** LR-01 Zinsreihe, LR-02 VPI/Mietindex, LR-03 HPI/GREIX-Lizenz, LR-04 Baupreisindex, LR-55 Renditeschwellen nach Zinswende.
+
+**Tests.** Replay = Reihe exakt (Golden); Modell: Momente/Quantile im Band (4.5); INV-18 (Pfad unabhängig von Spielerbefehlen); gleicher Seed → gleicher Pfad
+auf allen Engines; kein Pfad mit dauerhaftem Drift ohne Rücksprung (Langläufe 40 J.: Realpreis-Drift ∈ Band, 3).
+
+**Phase.** P3 (Startzustand + einfacher Pfad: Replay-frei, AR(1) ohne Regime), P5 (Regime-Modell, Korrelationen, Kalibrierung), P6 (Replay, Szenario-Format).
+
+### 2.2 Regionalmarkt (`region/`)
+
+**Zweck.** Kreis- und Gemeinde-Indizes aus nationalem Pfad × regionalen Faktoren; Quelle von Marktpreis, Marktmiete, Leerstand, Konkurrenzdruck
+und Prognosen je Region (→ 13 §2).
+
+**Zustand.**
+```ts
+interface RegionZustand {                       // je Kreis (401), dynamisch; Gemeinde = Kreis × statischer Offset
+  ars: KreisArs; lageklasse: 'A'|'B'|'C'|'D';   // [DES]-Zuordnung aus Struktur (13 §2.3); nie als „bulwiengesa A“ bezeichnen
+  preisIdx: number; mietNeuIdx: number; mietBestandIdx: number;     // Basis = Startwert; Niveau in cent/m² aus Kennzahl × Idx
+  leerstandBp: Bp; haushalte: number; wohnungen: number;             // v = 1 − H_wohnend/W
+  kaufpreisfaktorBp: number; phase: 'ERHOLUNG'|'BOOM'|'UEBERHITZUNG'|'KORREKTUR'|'TAL';
+  angebotsdruck: Bp; konkurrenzdruck: Bp; marktkenntnis?: never;    // Marktkenntnis gehört zum Spieler (2.7)
+  prognosen: PrognoseId[];                                           // NPC-Prognosen (Zeitung)
+}
+interface RegionStatisch { /* aus Datenpaket: Einwohner, Fläche, DEGURBA, Kreistyp, bevPrognose2040, Leerstand 2022, alqProxy, hochschule */ }
+```
+
+**Ablauf.** B03 (`REGION`): je Kreis `ε_k` aus `(REGION, monat, ars)`; neue Monatswerte. Gemeinden und Mikrolage ändern keinen Zustand (Offsets).
+
+**Kernlogik.**
+```text
+Δln P_k,t = β_k·Δln P_nat,t + a_k + θ·(v*_k − v_k,t) + η_k,t          β_k = Zyklus-Beta(Lageklasse, DEGURBA): A/B > 1, C/D ≈ 0,6–1 [GES]
+a_k = Trendterm aus Bevölkerungs-/Haushaltsprognose (Haushalte +0,58 %/J. Bund [ABG] → 13 §2.1, regional LR-07)
+η_k = idiosynkratisch, AR(1), σ_η größer in kleinen Kreisen
+m_neu,k,t+1 = m_neu,k,t·(1 + a_m·(v*_k − v_k,t) + b·π_t)             Neuvertragsmiete; Mietpreisbremse deckelt in 2.8, nicht hier
+m_best,k,t+1 → konvergiert träge gegen m_neu (§ 558: 15 Mon., Kappung 20/15 %) ⇒ Spread m_neu − m_best entsteht endogen
+v_k,t+1 = v_k,t + c·(Fertigstellungen_k − Abgang_k − ΔH_k)/W_k         // Fertigstellungen: Bund 2021–25 BELEGT (13 §2.2), regional LR-06
+F_k = p_k / (12·m_k)  = F_lage·g(Zins)·(1 + Erwartungsterm);  Erwartungsterm = Momentum × Kreditverfügbarkeit (bankStrenge aus 2.6)
+Phase φ_k: Zustandsautomat aus (ΔP 12M, Zinsänderung, v, Momentum); Korrektur wird durch Zins-/Kreditschock ausgelöst
+Angebotsdruck N_k ↑ in KORREKTUR/TAL, ↓ im BOOM (antizyklische Chancen, → 13 §2.1)
+```
+**Schätzkaskade** (→ 05 §3): Kennzahl der Gemeinde `[BEL]` → sonst Kreis × Strukturfaktor `[GES]` → sonst Bund × Faktor `[GES]` (Erklär-Karte zeigt den Weg).
+**Kaufpreisfaktoren:** Startniveau Kreis aus `kennzahlen.json` (Gutachterausschüsse, BORIS, Mietspiegel-Parameter; LR-05); Spanne je Lageklasse [GES]: A 25–35, B 20–28, C 16–24, D 12–20 (Bruttomietrendite 100/F).
+**Prognose-Zeitung:** NPC-Quellen (Makler, „Studie“, Amt) publizieren Prognosen mit Fehlerprofil nach 13 §2.2: Richtung meist richtig, Höhe/Zeitpunkt oft falsch, Fremdprognosen schlechter als Amtsdaten (`PROGNOSE`-Strom; Wahrscheinlichkeiten `[DES]`, ausdrücklich keine Statistik, n = 11); nach Ablauf Zielerreichungsgrad.
+
+**Parameter.**
+
+| ID | Wert / Spanne | Status |
+|---|---|---|
+| `region.start.*` (Preis €/m², Miete €/m², Leerstand, Haushalte je Kreis) | Kennzahlen | `[BEL]`/`[ABG]`/`[GES]` je Region, Fokusländer zuerst (LR-05/06) |
+| `region.lageklasse.regel` (EW-Klassen, DEGURBA) | ≥ 500 k EW → A-ähnlich; 100–499 k + DEGURBA 01 → B; 20–99 k → C; sonst D | `[DES]` |
+| `region.beta.*`, `region.theta`, `region.a_m`, `region.sigma_eta` | Spannen je Lageklasse | `[GES]` → `[ABG]` (GREIX/HPI-Städte) |
+| `region.phase.schwellen` | Regeln aus ΔP, Δzins, v | `[DES]` |
+| `region.prognose.fehlerprofil` | Richtung 80 %, Höhe/Zeitpunkt ±-Verteilung | `[DES]` (Vorlage 13 §2.2) |
+
+**Entscheidungen.** `regionBeobachten`; Marktkenntnis-Aufbau (2.7). **Ereignisse.** „Region kippt“ (Phasenwechsel als Zeitungsmeldung mit Verzug), Prognose erschienen/verfehlt, Regelwechsel (2.14).
+**LÜCKEN.** LR-05..08. **Tests.** Σ-Konsistenz Kreis → Bund (gewichteter Mittelwert ≈ nat. Index, Toleranz 1 %); kein Kreis mit F < 5 oder > 60; Leerstand ∈ [0, 25 %]; Spread-Entstehung ohne Mietpreisbremse; Fallback-Kaskade liefert Status korrekt.
+**Phase.** P2 (statische Region + Datenpaket), P3 (dynamisch v1, Fokusländer), P5 (Phasenautomat, Prognosen), P7 (Gemeinde-/Quartiersebene).
+
+### 2.3 Angebotsgenerator (`offers/`)
+
+**Zweck.** Stetiger Strom realistischer Angebote je beobachteter Region/Suchprofil mit Informationsasymmetrie (Leitplanke 4; → 13 §3).
+
+**Zustand.**
+```ts
+interface Angebot {
+  id: AngebotId; kreis: KreisArs; gemeinde: Ars; objektart: 'ETW'|'MFH'|'EFH'|'WGH'|'MIKRO'|'NEUBAU';
+  kanal: 'PORTAL'|'MAKLER'|'OFFMARKET'; eingestelltMonat: MonthIndex; verfallMonat: MonthIndex;
+  preisCent: Cents; expose: ExposeDaten;            // was der Verkäufer zeigt (Schönung angewandt)
+  wahr: AngebotWahrheit;                            // verdeckt: Zustand je Bauteil, wahre Fläche/Ist-Miete, Mängel, WEG-Lage, Verkäufermotiv, Reservationspreis
+  verkaeufer: { motiv: 'EILIG'|'NORMAL'|'FISHING'|'ERBE'|'BAUTRAEGER'; reservationBp: Bp; verhandlungsbereitBp: Bp };
+  konkurrenz: { interessenten: number; wegkaufRateBp: Bp };
+}
+```
+
+**Ablauf.** B07 (`OFFERS` Anzahl/Art, `OFFER_TRUTH` Wahrheit, `EXPOSE` Schönung; Schlüssel `angebotId`). Je Region/Monat:
+`N_neu ~ Poisson(λ(kreis, phase, größe, suchprofil))`, Off-Market-Anteil nach Beziehungswert (2.7). Verfall/Preissenkung monatlich.
+
+**Kernlogik.**
+```text
+Marktmiete_obj   = m_neu(Gemeinde) × f_mikro × f_zustand × f_größe                      // 13 §3.3
+Fair-Preis_obj   = p(Gemeinde,Segment) × Fläche_wahr × f_mikro − BarwertStau_wahr       // = wertKern (2.16), nie ein zweites Modell
+Angebotspreis    = Fair-Preis × (1 + Aufschlag(phase, motiv))         Aufschlag: BOOM +5…+15 %, TAL −5…+3 % [GES]
+Ist-Miete_obj    = Marktmiete × Unterschreitung(Vertragsalter, Kappung)  → „Schnäppchen“ endogen (unter Markt vermietet / Stau / schwache Nachfrage)
+Exposé-Schönung  : je Merkmal m: expose_m = wahr_m ⊕ Δ_m,  Δ_m ~ Verteilung(schoenungsgrad(Verkäufertyp, Kanal));
+                   Fläche (+0…+8 %), Ist-Miete (Wunschmiete statt Ist, +0…+25 %), Zustand („gepflegt“ trotz Stau), Rücklage („solide“), Lage („ruhig“)
+Renditeverteilung: Angebots-Bruttorendite-Mix so, dass ≈ 3 % schnell, ≈ 6 % typisch, ≈ 10 % selten (13 §3.3, Niedrigzins-Beleg; bei 4 % Zins verschoben, LR-16)
+Konkurrenz       : wegkaufRate/Monat = f(Preis/Fair, Rendite, phase, Kanal);  OFFMARKET niedriger, PORTAL höher; Kaufangebot erhöht Rate nicht
+Verfall          : Alter > τ(phase): Preissenkung −2…−6 %/Stufe, nach Stufe 3 Rücknahme; „Ladenhüter“-Signal als Information
+Häufigkeit verdeckter Mängel: Feuchte, Sonderumlage, Mietrückstand, Baulast … je Baujahr/Zustand/Objektart (LR-12)
+```
+**Aufdeckung** erfolgt nur in `acquisition/` (2.4); der Generator liefert keine UI-Daten außer `expose`. Verteilung der Objektarten: ETW dominant (P3); MFH P5;
+EFH/WGH/Mikro/Neubau P7 (Fachwissen LÜCKE → 13 §3.1).
+
+**Parameter.**
+
+| ID | Wert / Spanne | Status |
+|---|---|---|
+| `offers.lambda.*` (Angebote je 10 k Einwohner/Monat nach Phase) | je Lageklasse | `[GES]` LR-13 |
+| `offers.aufschlag.*` | s. o. | `[GES]` LR-14 |
+| `offers.schoenung.*` (Anteil geschönter Exposés, Betrag) | 20–60 % der Exposés, Δ s. o. | `[GES]` LR-12 |
+| `offers.maengel.*` (Raten verdeckter Mängel) | je Baujahr | `[GES]` LR-12 |
+| `offers.wegkauf.*`, `offers.verfall.*`, `offers.offmarket.anteil` | 5–20 %/Mon.; 3–8 % | `[GES]` LR-14 |
+| `offers.rendite.mix` | s. o. | `[ABG]` aus 13 §3.3 (Einzelbeleg, Niedrigzins) |
+
+**Entscheidungen.** Suchprofil, Beobachtung, Verwerfen mit Begründung. **Ereignisse.** „Neues Angebot im Suchprofil“ (nicht stoppend), „Angebot weg“ (stoppend nur bei laufendem Deal), Off-Market-Hinweis.
+**LÜCKEN.** LR-12..16. **Tests.** Wahrheit unabhängig vom Prüfen (1.6); `expose` leakt `wahr` nicht (INV-09); Renditemix im Band; Fair-Preis-Erwartungswert = wertKern (INV-17); Determinismus bei neuem Objekt (Schlüsselregel).
+**Phase.** P3 (ETW, 6–8 Merkmale), P5 (MFH, Konkurrenz-Ausbau), P7 (Off-Market über Netzwerk, Sonderobjekte).
+
+### 2.4 Akquise & Kaufprozess (`acquisition/`)
+
+**Zweck.** Zustandsautomat vom Angebot bis zum Nutzen-Lasten-Wechsel; Prüfschritte decken verdeckte Merkmale gegen Zeit/Geld auf (→ 13 §3.4, §4).
+
+**Zustand.**
+```ts
+type DealStatus = 'SICHTUNG'|'VORPRUEFUNG'|'BESICHTIGUNG'|'DETAILPRUEFUNG'|'FINANZIERUNG'|'VERHANDLUNG'|'BEURKUNDUNG'|'BESTAND'|'ABGELEHNT'|'VERLOREN'|'VERKAUFT';
+interface Deal { id: DealId; angebotId: AngebotId; rt: RtId; status: DealStatus; seit: MonthIndex;
+  gepruefteSchritte: PruefSchritt[]; unterlagen: Record<UnterlageId, 'ANGEFORDERT'|'EINGEGANGEN'|'AMTLICH'|'FEHLT'>;
+  gebote: Array<{ monat: MonthIndex; preis: Cents; bedingungen: Bedingung[]; antwort?: 'ANGENOMMEN'|'GEGEN'|'ABGELEHNT' }>;
+  finanzierung?: AntragId; beurkundungMonat?: MonthIndex; nlwMonat?: MonthIndex; kaufvertrag?: Kaufvertrag; }
+```
+Statusvokabular = `objekt.schema.json` (13 §4); Unterzustände nur intern. `VERLOREN` = Konkurrent/Verkäufer zieht zurück [DES].
+
+**Ablauf.** Befehle (1.4) schieben `Deal` voran; A07 (`NEGOTIATION`, `COMPETITION`) wertet Verkäuferreaktionen, Wegkauf, Fristen aus; Gebote laufen in
+**Runden** (Monatstakt; Gegenangebot = nächste Runde). Beurkundung → Termin: KNK fällig (A07), Kaufpreisfälligkeit nach `kaufpreisFristMonate`, **Nutzen-Lasten-Wechsel
+(NLW) immer am Monatsersten** (B06); ab NLW starten Miete, BK, AfA, 15-%-Fenster (2.13).
+
+**Kernlogik.**
+- **Aufdeckungsmatrix** (verbindlich; ✓ deckt auf, ◐ nur Parteivortrag/Schätzspanne; Genauigkeit nach 1.9):
+
+| Merkmal ↓ / Schritt → | Exposé | Karte | Erstgespräch (3 Fragen) | Besichtigung | Unterlagen | Gutachter | Bank |
+|---|---|---|---|---|---|---|---|
+| Mikrolage | – | ✓ | ◐ | ✓ | – | – | – |
+| Ist-Miete / Rückstände | ◐ | – | ◐ | – | ✓ Mietverträge, Mieterliste, Zahlungseingang | – | ✓ (Nachweis) |
+| Wohnfläche | ◐ | – | – | grob | ✓ WoFlV | – | – |
+| Große Gewerke (Heizung, Fenster, Elektrik, Dach) | ◐ | – | ◐ | ◐ sichtbar | ✓ Nachweise | ✓ | – |
+| Feuchte/Risse/Übersanierung | – | – | – | Verdacht | – | ✓ Ursache | – |
+| WEG-Rücklage, Beschlüsse, Sonderumlagen | ◐ | – | – | – | ✓ Protokolle 3–5 J., Wirtschaftsplan, Vermögensbericht | – | – |
+| Grundbuch Abt. II/III, Baulasten, Altlasten, Anliegerbeiträge | – | – | – | – | ✓ Auszug, Behördenauskünfte | – | ✓ (GB) |
+| Beleihungswert < Kaufpreis | – | – | – | – | – | – | ✓ |
+
+- **Reihenfolge-Gates** (Warnung, kein Verbot): Finanzierungszusage **vor** `beurkunden` (sonst Risiko-Flag „ohne Zusage“, Folge 2.6/2.17); Unterlagen vor Gebot empfohlen.
+- **Verkäuferreaktion:** `reservationspreis` (verdeckt) ← Fair-Preis × (1 − verhandlungsbereitBp(motiv, phase, Verweildauer)); Gebot ≥ Reservation → Annahme (Wahrscheinlichkeit nach Abstand und Bedingungen), sonst
+  Gegenangebot (Mitte, gerundet) oder Ablehnung; belegte Mängel (Gutachten) und Beleihungswert unter Kaufpreis wirken als **Verhandlungshebel** (Nachlass auf Mängelbarwert).
+- **Konkurrenz:** je Monat Wegkaufwurf (`COMPETITION`) mit `wegkaufRateBp`; zügiges, verbindliches Auftreten senkt die Rate (Bonus `[DES]`).
+- **Beurkundung:** Entwurf → Termin → Vorkaufsrecht (Gemeinde-Negativattest; Mieter bei Umwandlung) → Fälligkeit. KNK = 2.5. Aufteilung Kaufpreis Gebäude/Boden/Inventar im Vertrag (`kaufvertragGestalten`) steuert AfA und GrESt-Bemessung (Rücklage-Anteil **nicht** abziehbar, BFH II R 49/17).
+- **Kosten/Dauer (Basis, `[GES]`):** Besichtigung 1 Monat inkl. Terminierung; Unterlagen 1–2 Monate (Behördenauskünfte, Vorkaufsrecht); Bankzusage 1–2 Monate; Notarentwurf bis Termin 1 Monat; Fälligkeit 1–2 Monate nach Beurkundung; Gutachter-Honorar nach Objektart.
+
+**Parameter.**
+
+| ID | Wert / Spanne | Status |
+|---|---|---|
+| `acq.dauer.*` (Besichtigung, Unterlagen, Bank, Notar, Fälligkeit) | s. o. | `[GES]` LR-13 |
+| `acq.kosten.*` (Gutachter, Auskünfte, Fahrt, Grundbuch) | je Objektart | `[GES]` LR-10, LR-13 |
+| `acq.genauigkeit.*` (Schätzspanne je Schritt/Kenntnis) | z. B. Besichtigung ±20 %, Gutachten ±5 % | `[DES]` |
+| `acq.verhandlung.*` (Nachlassspanne je Phase), `acq.wegkauf.*` | TAL 3–10 %, BOOM 0–3 % | `[GES]` LR-14 |
+| `acq.ap.*` (AP je Schritt) | Matrix 1.4 | `[DES]` |
+
+**Entscheidungen.** Reihenfolge und Tiefe der Prüfung (jeder Schritt irreversibel, INV-06), Gebotshöhe/Bedingungen, Abbruch, Vertragsgestaltung, Reservierung (im Vault nicht behandelt: nur Mechanik „Option mit Vertragsstrafe“, `[GES]` LR-15).
+**Ereignisse.** „Konkurrent kauft weg“, „Verkäufer zieht zurück/erhöht“, „Gutachten findet Mangel“, „Vorkaufsrecht ausgeübt“, „Bank senkt Beleihungswert“, Beurkundungstermin, Fälligkeitsfrist (stoppend).
+**LÜCKEN.** LR-10, LR-12..15. **Tests.** Jeder Schritt ändert `wissen`, nie `wahr` (INV-16, INV-32); Undo über irreversiblen Schritt verweigert (INV-06); Gate-Warnungen; NLW immer Monatserster; Zustandsautomat ohne tote Zustände (Property-Test: jeder Zustand erreicht `BESTAND|ABGELEHNT|VERLOREN`).
+**Phase.** P3 (ETW-Funnel komplett), P5 (MFH, Paketkauf, Verhandlungsausbau), P7 (Off-Market, Aufteilung, Bauträger/MaBV).
+
+### 2.5 Kalkulation & Kennzahlen (`calc/`, `valuation/` Teil)
+
+**Zweck.** Reine, zustandsfreie Funktionen (Tracer-fähig, 1.8): Kaufnebenkosten, Kapitalbedarf, Annuität, Kennzahlen K01–K35, Kaskade (→ 10 §1).
+
+**Zustand.** Keiner (Eingaben → `Kennzahl<T>`). **Ablauf.** Synchron im UI (Live-Rechnung) und intern von Bank/Scoring/Deal aufgerufen; **dieselbe** Funktion rechnet Plan (Spielerannahmen) und Prüfung.
+
+**Kernlogik.**
+```ts
+kaufnebenkosten(o, p) = { grest: floorToEuro((kaufpreis − inventarSeparat) × grest[land]),   // Rücklage nicht abziehen; Rundung LR-09
+                          notarGb: kaufpreis × qNotarGb [GES: Pauschale ≈ 2 %, später GNotKG-Staffel LR-10],
+                          makler: maklerPflichtig ? kaufpreis × käuferSatz : 0 }            // § 656c: ETW/EFH an Verbraucher halbiert; MFH frei
+kapitalbedarf = kaufpreis + knk + sofortsanierung + finanzierungskosten + startreserve        // K07; Puffer ≠ Eigenkapital im Objekt (K08 A/B getrennt)
+```
+**Grunderwerbsteuer je Land, Stand Nov. 2026** (`regeln.json`, Regelauflöser mit Stichtag Beurkundung; `[BEL·C]` Vault 30.09.2026, in 20 §C.2 `[WEB→W]` bestätigt):
+
+| BW | BY | BE | BB | HB | HH | HE | MV | NI | NW | RP | SL | SN | ST | SH | TH |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 5,0 | 3,5 | 6,0 | 6,5 | 5,5 (ab 01.07.2025) | 5,5 | 6,0 | 6,0 | 5,0 | 6,5 | 5,0 | 6,5 | 5,5 | 5,0 | 6,5 | 5,0 (ab 01.01.2024) |
+
+Vorwerte für historische Szenarien: HB 5,0 %, TH 6,5 % (bis 2023), SN 3,5 % (bis 2022). Primärquellen je Land `gueltig_ab` offen → LR-09.
+**Cashflow-Kaskade** (Pflichtdarstellung, → 10 §1.7): operativer CF → CF nach Finanzierung → Liquidität nach Rücklagen → CF nach Steuern; PLAN (aus `calc/`) und IST (nur Ledger) getrennt (1.8).
+**Kennzahlen:** K01–K35 gemäß 10 §1 (Bierdeckel 1/2, Kaufpreisfaktor, Brutto-/Nettorendite, EK-Rendite, K22 Annuität/Restschuld, K25–K30 Cashflow, K31–K35 Bankkennzahlen).
+**Break-even-Rendite** (Lerninstrument): `(Zins + Tilgung)/(1 − Kostenquote)`; Referenztabelle 14 §4.6 ist Testorakel (4).
+**Haushalts-/Bankkennzahlen** (K31–K35) liegen in `calc/`, die **Entscheidung** in `bank/` (2.6).
+
+**Parameter.**
+
+| ID | Wert | Status |
+|---|---|---|
+| `knk.grest.<land>` | Tabelle oben | `[BEL·C]` → LR-09 |
+| `knk.notar_grundbuch` | ≈ 2 % (1,5–2 %) | `[GES]` LR-10 |
+| `knk.makler.kaeufer_satz` | ETW/EFH oft 3,57 % inkl. MwSt. (Halbteilung), MFH verhandelbar | `[GES]` LR-11 (→ 01 §4) |
+| `calc.kostenquote.default` | 25–33 % der Kaltmiete (Rücklagen/nicht umlagef.) | `[GES]`/`[ABG]` 10 W12 |
+| `calc.bierdeckel.schwellen` (Ampel) | 5/6/8/10 % | `[DES]` (LR-55) |
+
+**Entscheidungen.** Annahmen im Rechner setzen (Miete erzielbar, Kosten, Zins, Tilgung); Rechner **bewertet nie** (kein „gut/schlecht“ außer Bank-/Break-even-Info).
+**Ereignisse.** keine. **LÜCKEN.** LR-09..11, LR-55. **Tests.** Golden T1–T13 (→ 10 §1.9, 14 §5.1) bit-/cent-genau; Property: Monats- vs. Jahreswerte nie gemischt, Σ Kaskade konsistent (INV-35); Tracer-Ergebnis = Direktergebnis.
+**Phase.** P1 (alles), P3 (UI-Anbindung, `dealRechner`), P4 (Steuerstufe), P5 (Portfolio-Aggregate).
+
+### 2.6 Bank & Kredit (`bank/`)
+
+**Zweck.** Deterministische, erklärbare Kreditentscheidung (Leitplanke 5), Konditionen, Darlehensverwaltung, Anschluss, Portfoliobetrachtung (→ 10 §2).
+
+**Zustand.**
+```ts
+interface Bank { id: BankId; typ: 'REGIONAL'|'DIREKT_HYPO'|'VERMITTLER'; profil: BankProfil;       // beim Start aus Spannen gezogen (BANK-Strom), Zyklusfaktor strenge
+                 beziehung: { score: number; seit: MonthIndex; kredite: DarlehenId[] }; bearbeitungsMonate: [min: number, max: number]; }
+interface Darlehen { id: DarlehenId; bank: BankId; objekt: ObjektId; restschuld: Cents; sollzinsBp: Bp; anfTilgungBp: Bp; ratePlan: Cents;
+                     bindungEnde: MonthIndex; sondertilgungBp: Bp; stLimitJahr: Cents; bereitstellungsFreiBis?: MonthIndex; status: 'ZUGESAGT'|'AUSGEZAHLT'|'GEKUENDIGT'|'ABGELOEST'; }
+```
+**Profile** (Auszug → 10 §2.3; Werte aus Vault, Spannen `[BEL·C]`):
+
+| Parameter | A „2021“ (leicht/historisch) | B „2026“ (Standard, Schwer) |
+|---|---|---|
+| `bwFaktor` (Beleihungswert/Marktwert) | 0,80 | ≈ 0,90 |
+| Mietbasis · Anrechnung | Jahresbrutto-Kaltmiete · 75 % | Jahresnetto-Kaltmiete · 60–80 % (ohne Vertrag ≤ anrechenbar, `[GES]` 0) |
+| Stresszins · Modus | 8 % · `NUR_STRESSZINS` (`[GES]` Annahme) | 5–6 % · `NUR_STRESSZINS` |
+| EK-Anforderung | KNK aus EK, 100 % KP finanzierbar | KNK + 20–30 %; Vollfinanzierung nur bei sehr guter Bonität (Aufschlag) |
+| KNK mitfinanziert | nein (Ausnahme sehr kleiner KP) | selten (Ausnahme Kleinpreis, Schwelle `[GES]` LR-17) |
+| Portfolio-Schwelle | alle Bestandsobjekte < 80 % beliehen | wie A (Bezugswert offen, `[GES]` LR-19) |
+| Person | unbefristet nach Probezeit, Selbständige 2–3 Abschlüsse | wie A, strenger bei Selbständigen |
+| Min. Puffer nach Kauf | 10–20 T€ | 10–20 T€ |
+
+Profilzuordnung: Szenario `bank: A|B|AUTO`; `AUTO` interpoliert nach Zinsumfeld/Regime (STRESS ⇒ strenger; „Banken behäbiger“, 20 §A). Zyklusparameter in B04.
+
+**Ablauf.** Befehl `kreditanfrage` → Entscheidung nach `bearbeitungsMonate` (A07, `BANK` für Dauer, nie für Entscheidung). Monatlich A05: Zins/Tilgung/Auszahlung. B04: Basiszins je Bindung, Spreads. B06: Zinsbindungsenden.
+**Kernlogik.** Entscheidungsfunktion `pruefe(antrag, bank, markt)` **exakt** wie → 10 §2.4 mit Prüfschritten **PS0–PS9** (dort „P0–P9“; Umbenennung wegen Phasen-Tags):
+PS0 Vollständigkeit (Rückfrage = Zeitverlust) · PS1 Person/SCHUFA · PS2 Sicherheit/Beleihungswert (Video-Abschlag 5 % ≤ 600 T€, RND ≥ 40 J.) · PS3 EK/KNK · PS4 Mietansatz · PS5 Haushaltsrechnung zum Stresszins ·
+PS6 Liquidität nach Kauf · PS7 Portfoliobetrachtung (nur bei Haushaltsunterdeckung und Bestand; alle Objekte < 80 %, Gesamt-LTV ≤ 100 %, Portfolio-CF zum **Vertragszins** ≥ 0 `[GES]`) · PS8 Konditionen · PS9 Ergebnis
+(`ZUSAGE | GEGENANGEBOT | ABSAGE | RUECKFRAGE`, Begründungscodes aus 10 §2.4). `maxDarlehen = min(formal, sehrGuteBonität ? formal : bw, portfolioTraegt ? ∞ : haushaltsMax)`; Gegenangebot nur mit ausreichender Restliquidität.
+```text
+Zins = Basis(bindung) + Spread_beleihung(LTV) + Spread_überMarktwert + Spread_vollfin − Rabatt_paket ± Verhandlung(≤ Cap)     // Zielband B: 10 J. ≈ 3,9–4,5 % (Nov. 2026)
+Staffel Beleihungsauslauf (Aufschlag vs. 80 %, `[GES]`, LR-18): ≤ 60 %: −15 bp (−25…−5) · ≤ 80 %: 0 · ≤ 90 %: +20 (10…40) · ≤ 100 %: +45 (25…80) · ≤ 110 %: +80 (50…150)
+```
+- **Anschlussfinanzierung** (Fenster 12/6/3 Monate vor `bindungEnde`, Stopp-Regel): Optionen **Prolongation** (Neuprüfung vereinfacht: Beleihung + Zahlungshistorie, `[GES]`), **Umschuldung** (Bankwechsel; Kosten Grundschuldabtretung/-neu `[GES]`), **Forward** (Vorlauf ≤ 60 Mon., Aufschlag `[GES]` LR-20), **Ablösung/Verkauf**; Standardoption bei Nichtwahl: variable Anschlusskondition (= Basiszins + Spread, jederzeit kündbar).
+- **Sondertilgung:** jährliches Recht `stLimit` (Vertragsmerkmal 0/5/10 % `[GES]`, 01 §4: „meist 5–10 %“); darüber nur mit **Vorfälligkeitsentschädigung** `VFE = Σ_{Restlaufzeit} Restschuld_t × max(0, Sollzins − Wiederanlagezins(Restlaufzeit))` abgezinst (Näherung Zinsmargenschaden, `[GES]` LR-20); ordentliches Kündigungsrecht nach 10 Jahren (6 Monate Frist, § 489 BGB `[GES]` LR-20). Stichtag Jahresrecht: B05.
+- **Nachbeleihung/Cash-out (Eigenkapital-Recycling):** im Vault **nicht beschrieben** (→ 14 §7). Mechanik als eigenes Darlehen auf freien Beleihungsraum mit voller PS5-Prüfung; Status **`[GES]`-Mechanik, im UI Badge „nicht belegt – Spielannahme“**; Befehl `nachbeleihung` erst P5, ohne Lernbehauptung (LR-20).
+- **Vermittler:** `viaVermittler` = Anfrage an k aus den Profilspannen gezogene Banken, Spieler sieht beste Angebote; Kosten 0 € (Standard, gekennzeichnet, LR-20). **Bankberater als Deal-Quelle:** Beziehungswert ≥ Schwelle schaltet Off-Market frei (2.3).
+- **Preisverfall/Nachbesicherung** (Wertverfall → LTV ↑): nur bei Anschluss oder Zahlungsverzug, selten, Schwellen `[GES]` LR-54; Kreditkündigung → 2.17.
+
+**Parameter.**
+
+| ID | Wert | Status |
+|---|---|---|
+| `bank.profil.A.*`, `bank.profil.B.*` | Tabelle oben | `[BEL·C]` (10 §2.3) |
+| `bank.lebenshaltung.pauschale(personen)` | 1.100 / 1.700 / 2.200 € (1/2/4 Pers., Spanne ±25 %) | `[GES]` LR-17 |
+| `bank.einmalzahlung.anrechnung`, `bank.rahmen.belastungsquote`, `bank.depot.abschlag` | 0–50 %, 2–5 %, 20–30 % | `[GES]` LR-17 |
+| `bank.spread.*`, `bank.verhandlung.cap` | s. o.; ≤ 50 bp (Einzelfall −100 bp) | `[GES]` LR-18 |
+| `bank.sondertilgung.*`, `bank.vfe.*`, `bank.forward.aufschlag` | s. o. | `[GES]` LR-20 |
+| `bank.portfolio.*` (Gesamt-LTV, CF-Kriterium, Bezugswert) | s. o. | `[GES]` LR-19 |
+| `bank.bearbeitung.monate` | 1–2 (B: „behäbiger“ 2–3) | `[GES]` LR-17 |
+
+**Entscheidungen.** Bankwahl/Vermittler, Zinsbindung, Anfangstilgung, Sondertilgungsrecht, EK-Einsatz, Unterlagen, Bonitätspflege (Dispo/Karten kündigen), Anschlussoption, Nachbeleihung.
+**Ereignisse.** Zusage/Gegenangebot/Absage mit Code + Zahlen (Pflicht-Erklärung 1.8), Rückfrage, Bindungsende-Fenster (stoppend), Konditionsänderung, Nachbesicherungsforderung (selten).
+**LÜCKEN.** LR-17..20, LR-53, LR-54. **Tests.** Golden-Fälle PS0–PS9 aus 10 §2.4; INV-10..14 (deterministisch, begründet, keine unbegrenzte Vergabe, monotoner Zins, Sondertilgung nur bis Recht); Profil-A- vs. B-Vergleich (14 K12); S1/S2/S4/S5 (14 §5.3).
+**Phase.** P3 (Profile A/B, PS0–PS6 + PS8/9, Konditionen), P5 (PS7 Portfolio, Kreditrahmen, Anschluss, Sondertilgung/VFE, Vermittler, Nachbeleihung), P7 (Gewerbe-/GmbH-Finanzierung, Bürgschaft).
+
+### 2.7 Spieler & Haushalt (`player/`)
+
+**Zweck.** Person(en), Einkommen, Lebenshaltung, Zeitbudget, Wissen, Netzwerk, Rechtsträger; Quelle von Liquidität und Bankbonität (→ 14 §4.2, 01-spieldesign Startprofile S1–S6).
+
+**Zustand.**
+```ts
+interface Spieler { personen: Person[];                        // 1–2 Erwachsene (+ Kinder als Haushaltsgröße)
+  einkommen: { nettoMonat: Cents; einmalzahlungJahr: Cents; art: 'UNBEFRISTET'|'PROBEZEIT'|'BEFRISTET'|'SELBSTSTAENDIG'; jahreSelbst?: number; zveUebrigJahr: Cents };
+  lebenshaltung: { basisMonat: Cents; wohnkostenMonat: Cents; dispoRahmen: Cents; kartenRahmen: Cents };
+  zeit: { apBudget: number; apFrei: number; delegiert: Record<ObjektId, Delegation> };           // [DES]
+  netzwerk: Record<KontaktId, { rolle: 'BANKBERATER'|'MAKLER'|'HANDWERKER'|'STEUERBERATER'|'ANWALT'|'GUTACHTER'; beziehung: number /*0–100*/ }>;
+  marktkenntnis: Record<KreisArs, number /*0–100*/>; kompetenzen: Record<ModulId, number>;     // Weiterbildung (Wissen), schmälert Fehlerraten
+  rechtstraegerIds: RtId[]; }
+```
+**Ablauf.** A01 monatlich: Netto-Gehalt (+ ½ Einmalzahlung im Dez. [DES]), Lebenshaltung (inkl. eigene Wohnkosten, bestehende Raten) über Ledger; B05 jährlich: Gehaltsanpassung `Δ = π·γ ± Lebensereignis`, Lebenshaltung indexiert (`PLAYER`); B08: AP-Budget auffrischen.
+**Kernlogik.**
+- **Einkommen:** Startprofile S1–S6 (3.100 € netto/45 T€ EK … ; „S6 Mein echtes Profil“ mit Validierungsgrenzen). **Steuerbezug:** `nettoMonat` ist nach Lohnsteuer; für 2.13 wird `zveUebrigJahr` als Eingabe des Profils geführt (kein Brutto-Netto-Rechner im MVP, Hinweis `VEREINFACHUNG_OHNE_BRUTTO_NETTO`).
+- **Lebenshaltung:** Bankpauschale ≠ Ist-Ausgaben; Ist = Basis × Haushaltsfaktor × Preisindex (VPI). Zuzahlungen aus Objekten (negativer CF) laufen ins Girokonto; Dispo → 2.17.
+- **Zeitbudget (DESIGN):** AP/Monat (Vollzeit-Angestellter 12 AP `[DES]`, Selbständig 14, Teilzeit 16; Spanne), Kosten je Befehl 1.4; Verwaltung Selbst: Objekt-Zeitbedarf `AP/Monat = a + b·Einheiten` `[DES]`; Delegation tauscht AP gegen Geld und Kontrollverlust (Fehlerrate Dienstleister nach Qualität). Nicht verbrauchte AP verfallen (kein Ansparen über 1 AP hinaus [DES]). Zeit ist **keine Realitätsaussage** → Badge „Spielmechanik“.
+- **Netzwerk:** Beziehung wächst durch `netzwerkPflegen`, Geschäfte und Zeit; schaltet Off-Market (Bank/Makler), Handwerker-Preisabschlag (≤ 10 % [DES]), Gutachter-Termine.
+- **Marktkenntnis je Region** (1.9): +Beobachtung, +Besichtigung, +Bestand vor Ort; verengt Schätzspannen; Verfall bei Nichtbeachtung [DES].
+- **Lebensereignisse** (`PLAYER`): Jobverlust/Kurzarbeit, Gehaltssprung, Kind, Trennung/Scheidung, Krankheit, Erbschaft; Raten `[GES]` LR-56; jeweils Entscheidungsereignis mit Frist.
+- **Rechtsträger:** `PRIVAT` (1–2 Personen, Splitting-Option), `GMBH`, `HOLDING` (P7); getrennte Kassen (1.3).
+
+**Parameter.**
+
+| ID | Wert | Status |
+|---|---|---|
+| `player.start.S1..S6` (Einkommen, EK, Haushalt) | → 01-spieldesign | `[DES]` (Vorbilder 14 §4.2, `[GES]` Zahlenwerte) LR-51 |
+| `player.gehalt.anpassung` (γ·π, σ) | γ 0,6–1,0 | `[GES]` LR-51 |
+| `player.lebenshaltung.basis(haushalt)` | 1.100–2.600 €/Mon. | `[GES]` LR-17/51 |
+| `player.ap.*`, `player.netzwerk.*`, `player.kenntnis.*` | s. o. | `[DES]` |
+| `player.lebensereignis.raten` | z. B. Jobverlust 1–3 %/J. | `[GES]` LR-56 |
+
+**Entscheidungen.** Sparen/Umbuchen, Lebenshaltung anpassen, Depot verkaufen, Weiterbildung, Netzwerk pflegen, Nebenjob, Delegation, Rechtsträger gründen (P7).
+**Ereignisse.** Gehalts-/Lebensereignisse, Beziehung wächst/verfällt, AP-Engpass-Hinweis. **LÜCKEN.** LR-17, LR-51, LR-56. **Tests.** Σ Liquidität = Ledger; AP nie negativ (INV-31); Lebensereignisse deterministisch je `(PLAYER, monat, k)`; S9-Tempo-Plausibilität (14 §5.3).
+**Phase.** P3 (Profile S1–S6, Einkommen, Lebenshaltung, AP-Basis), P5 (Weiterbildung, Netzwerk, Delegation), P7 (Rechtsträger).
+
+### 2.8 Vermietung (`lease/`)
+
+**Zweck.** Mieter-Automat, Vertragsarten, Mieterhöhung, Zahlungsstörung, Kündigung/Räumung, Leerstand (→ 12 §1).
+
+**Zustand.**
+```ts
+type EinheitStatus = 'LEER_HERRICHTUNG'|'INSERIERT'|'AUSWAHL'|'VERTRAG'|'AKTIV'|'KUENDIGUNG'|'RAEUMUNG'|'AUSZUG';
+type AktivUnter = 'REGULAER'|'VERZUG'|'STUNDUNG'|'MINDERUNG'|'STREIT';
+interface Mietvertrag { id: MvId; einheit: EinheitId; mieter: MieterId; art: 'STANDARD'|'STAFFEL'|'INDEX'|'MOEBLIERT'|'GEWERBE'|'PREISGEBUNDEN';
+  kaltMiete: Cents; bkVorauszahlung: Cents; kaution: Cents; beginn: MonthIndex; letzteErhoehung?: MonthIndex;
+  klauseln: { bkUmlage: boolean; nr17Einzeln: string[]; kleinrepKosten: boolean; heizSchluessel: SchluesselId }; staffel?: Staffel[]; indexBasis?: number; unter: AktivUnter; rueckstand: Cents; }
+interface Mieter { id: MieterId; sichtbar: { beruf: string; haushalt: HaushaltTyp; angabenEinkommen?: Cents };
+  latent: { zahlungsneigungBp: Bp; zahlungsfaehigkeitBp: Bp; quelle: 'ARBEIT'|'AMT'|'FIRMA'; fluktuationBp: Bp; streitBp: Bp; ursacheAusfall?: 'UNFAEHIG'|'UNWILLIG' }; }
+```
+**Ablauf.** A02 Mieteingang (`PAYMENT`), A06 Lebenszyklus (`TURNOVER`, `TENANT`), B06 Termine (Wirksamkeit Mieterhöhung t+3, Index t+2, Staffelstufe), Befehle 1.4.
+**Kernlogik.**
+- **Zahlungswurf** je Vertrag/Monat: `P(voll) = 1 − h(latent, zustand, Einkommensschock)`, sonst Teil-/Nullzahlung; Rückstand sammelt; Ursache `UNFAEHIG/UNWILLIG` verdeckt, beeinflusst Eskalationserfolg (Stundung wirkt nur bei Fähigkeit). Bewerberprüfung (Gehaltsnachweis, SCHUFA, Amtsvollmacht) deckt `latent` mit Genauigkeit auf (1.9).
+- **Eskalation:** `VERZUG → Mahnung → Mahnung+Abmahnung → Kündigung → Räumung`; Stundung = Ratenplan (`Rückstand = Monate × Anteil × Miete`, `Zusatzrate = Rückstand/Rückzahlungsmonate`, 12 §1.5). Schwellen/Fristen/Schonfrist `[GES]` LR-38; Räumungsdauer 6–18 Mon., Anwalts-/Gerichtskosten `[GES]`; **keine Eigenmacht** (Befehl nicht verfügbar).
+- **Mieterhöhung** (Rechtsgrundlage zuerst bestimmen, keine „Minimum-Formel“, 12 §1.4):
+  Vergleichsmiete § 558: zulässig, wenn ≥ 15 Mon. unverändert bis Wirksamkeit und ≥ 12 Mon. seit letzter Erhöhung; `Obergrenze = min(Vergleichsmiete[Region, 2.2], Miete vor 3 J. × (1 + Kappung))`, Kappung 20 % bzw. 15 % (Gemeindeliste, 2.14); Zugang *t* ⇒ wirksam *t+3* bei Zustimmung, sonst Klage (Quote `[GES]` LR-39);
+  Index § 557b: `Miete_neu = Miete_alt × VPI_neu/VPI_alt` (VPI aus 2.1; Beispiel 720 × 125,8/119,8 = 756,06 €), wirksam *t+2*; Staffel § 557a: Euro-Beträge, ≥ 1 Jahr/Stufe, §§ 558–559b gesperrt; Modernisierung → 2.11.
+- **Mietpreisbremse (Neuvertrag):** wo Regel aktiv (2.14) `Miete ≤ ortsübliche Vergleichsmiete × 1,10` (`[WEB→W]`, bis 31.12.2029) außer Neubau (erstmals ab 01.10.2014 genutzt+vermietet), erste Vermietung nach umfassender Modernisierung, höhere Vormiete; Staffel: jede Staffel; § 5 WiStrG (> 20 % über üblich bei geringem Angebot) → Warnung/Rüge-Ereignis. `validate(inserieren)` blockt Verstoß **oder** warnt (Härte `[DES]` je Schwierigkeit).
+- **Kaution:** ≤ 3 Nettokaltmieten, Treuhand (INV-24), Abrechnung bei Auszug; Übergang beim Kauf (Vertrag geht über, Kaution mitübernehmen/übergeben `[GES]` LR-39).
+- **Fluktuation/Leerstand:** Jahresrate je Segment (≈ 8–10 % p. a. als Anker 01 §4; kleine/möblierte Einheiten höher) `TURNOVER`; Leerstandsdauer = f(Nachfrage-Score Region, Mikrolage, Miete/Markt, Zustand, Inseratsqualität); während Leerstand trägt Eigentümer **alle** Betriebskosten (INV-36). Mietminderung Quote je Mangel `[GES]` LR-39.
+- **Gewerbe/Amt/möbliert:** eigene Profile (Ausfall, Leerstand, Fluktuation `[GES]` LR-36/37); Mietrecht II (Index/Möblierung) nur als Politik-Ereignis (2.14).
+
+**Parameter.**
+
+| ID | Wert | Status |
+|---|---|---|
+| `lease.mieterhoehung.fristen` (15/12/3-Monate, Kappung 20/15 %, Index t+2) | → 11 §3.5 | `[BEL·C]` |
+| `lease.mpb.zuschlag` (+10 %), `lease.wistrg.grenze` (20 %) | | `[WEB→W]` / `[BEL·C]` LR-41 |
+| `lease.fluktuation.*`, `lease.leerstand.dauer.*`, `lease.vermarktung.*` | Spannen je Segment | `[GES]` LR-36 |
+| `lease.zahlung.*` (Verzugs-/Ausfallraten, Anker 3 % Reserve), `lease.eskalation.*`, `lease.raeumung.*` | | `[GES]` LR-37/38 |
+| `lease.kaution.*`, `lease.minderung.*` | ≤ 3 NKM; Quoten | `[BEL·C]`/`[GES]` LR-39 |
+
+**Entscheidungen.** Inserat/Miete/Mietart/Klauseln, Bewerberauswahl und -prüfung, Mieterhöhung (Art, Zeitpunkt), Mahn-/Stundungs-/Kündigungspfad, Delegation.
+**Ereignisse.** E-01 Zahlungsverzug, E-02 Totalausfall/Räumung, Kündigung Mieter, Mangelanzeige, Mieterhöhung zugestimmt/abgelehnt, Rüge Mietpreisüberhöhung, NKA-Streit (12 §6).
+**LÜCKEN.** LR-36..41. **Tests.** INV-27 (Bremse/Kappung), Fristen t+3/t+2, Golden Staffel/Index, Treuhand, Zahlungs-Langzeitquote ≈ Reservenanker (Band 4), Eskalation erreicht immer `AKTIV|AUSZUG`.
+**Phase.** P3 (Inserat, Bewerber, Vertrag, Zahlung), P4 (Vollautomat, Erhöhung, Störungen), P5 (MFH), P7 (Gewerbe, möbliert/Mikro, Amt-Profile).
+
+### 2.9 Betriebskosten & Abrechnung (`opex/`)
+
+**Zweck.** Umlagefähigkeit korrekt prüfen, Heiz-/CO₂-Kosten verteilen, NKA fristgerecht erstellen (→ 12 §2).
+
+**Zustand.** `Nebenkostenabrechnung { id, objekt, periode: [von, bis], positionen: Array<{ betrkvNr, betrag, schluessel, umlagefaehig: UmlageErgebnis }>, co2: { kgProQm, stufe, vermieterAnteilBp }, status: 'OFFEN'|'ERSTELLT'|'ZUGEGANGEN'|'FRIST_VERSTRICHEN', fehler: AbrFehler[] }`; je Mietvertrag Anteil/Vorauszahlung/Saldo.
+**Ablauf.** A03 monatlich Kosten (Ledger `BK_LIEFERANT` mit `betrkvNr`); A15 Dezember: Periode schließen → Aufgabe `nkaErstellen` (Frist 12 Monate nach Periodenende); `nkaErstellen` → Zugang → Vorauszahlungsanpassung ab Folgemonat (§ 560 Abs. 4); Einwendungsfrist 12 Monate; Verjährung 3 Jahre.
+**Kernlogik – Umlagefähigkeits-Prüfkette** (Position bleibt beim Eigentümer, sobald eine Stufe scheitert; Ergebnis mit Code):
+`1` in § 2 BetrKV genannt → `2` im Mietvertrag vereinbart (Nr. 17 nur einzeln benannt) → `3` zulässiger Schlüssel (Default Wohnfläche, tatsächliche Fläche maßgeblich; Verbrauch erfasst ⇒ verbrauchsabhängig; WEG-Schlüssel; Wechsel nur zum Verbrauch, vor Periodenbeginn) → `4` Heizkosten-/CO₂-Sonderregeln (HeizkostenV, Warmwasser getrennt, Fernablesung ab 01.01.2027) → `5` formell/fristgerecht (4 Mindestangaben, BGH VIII ZR 93/15).
+- **Nicht umlagefähig (Konten):** Verwaltung, Instandhaltung, Modernisierung, Anschaffung, Leerstandsanteile, Rücklagenzuführung, Sonderumlage, Rechtsschutz/Mietausfallpolicen, CO₂-Vermieteranteil, Kabel-Grundgebühr (seit 01.07.2024), Rauchmelder-**Miete**; „Verwaltungspauschale“ unzulässig.
+- **CO₂-Stufenmodell** (10 Stufen; Vermieteranteil 0 % bei < 12 kg/(m²·a) bis 95 % bei ≥ 52; Schwellen 12/17/…/52; → 12 §2.5):
+  `spez = Brennstoffmenge × Emissionsfaktor / Wohnfläche` (Erdgas 0,201 kg/kWh; Heizöl 2,68 kg/l) → Stufe → `Vermieteranteil = CO₂-Kosten × %`; CO₂-Preis 2026 Korridor 55–65 €/t, 2027 **unverändert** `[WEB→W]` (Bundesrat offen), Sonderfälle Etagenheizung, Denkmal (½), NWG; ab 01.01.2028 § 5a CO2KostAufG (hälftig bei Anlagen nach § 43 Abs. 1 GModG) nur ab diesem Datum. Beispiel (12 §2.5): 500 m², 45.000 kWh → 18,1 kg → Stufe 3 → 99,50 €.
+- **Fehlerklassen:** formell (Frist, Mindestangabe, Zeitraum > 12 Mon. ⇒ Nachforderung entfällt, Guthaben bleibt), materiell (Position streichen), HKV/CO₂ (Kürzung 15 %/3 %/3 %), WEG-Übernahme 1:1 (häufigster Fehler); Fehlerrisiko je Position steigt mit Komplexität (Gewerbe, WEG, Nr. 17), sinkt mit Wissen/Verwaltung `[DES]`; Entdeckung durch Mieter innerhalb 12 Monaten.
+- Grundsteuer: Land-Modell × Hebesatz (Feb/Mai/Aug/Nov), umlagefähig Nr. 1.
+
+**Parameter.**
+
+| ID | Wert | Status |
+|---|---|---|
+| `opex.betrkv.katalog`, `opex.fristen.*` (12/12/3-Jahre, 30 Tage Prüffrist) | → 12 §2.1, §2.6 | `[BEL]`/`[BEL·C]` |
+| `opex.co2.stufen`, `opex.co2.emissionsfaktoren`, `opex.co2.preis(jahr)` | Tabelle 12 §2.5; 55–65 €/t | `[BEL]`; Preis 2026/27 `[WEB→W]` LR-45 |
+| `opex.kuerzung.hkv/co2/verbrauchsinfo` | 15 / 3 / 3 % | `[BEL·C]`, Widerspruch L-39 beachten |
+| `opex.fehler.basisrate`, `opex.fehler.komplexitaetsfaktoren` | Raten je Position | `[GES]` LR-36 (Teil von 12 L-39-Familie) |
+| `opex.grundsteuer.*` (Modell, Messzahl, Hebesatz) | je Land/Gemeinde | `[GES]` LR-32 |
+| `opex.heizkosten.eur_qm.*` | je Energieträger/Zustand | `[GES]` LR-45 |
+
+**Entscheidungen.** Erstellen selbst/delegiert (Gebühr), Zeitpunkt, Schlüsseländerung, Vorauszahlungshöhe, Verbrauchserfassung nachrüsten (Fernablesung), Belegeinsicht, Widerspruchsbearbeitung.
+**Ereignisse.** NKA fällig/Frist droht (stoppend ≤ 1 Mon.), Mieterwiderspruch, Nachzahlung/Guthaben, Fehlerfolge, CO₂-Stufenwechsel. **LÜCKEN.** LR-32, LR-36, LR-45. **Tests.** Golden CO₂-Beispiel; Prüfkette je Position (Property: Scheitern ⇒ Eigentümerkonto); Frist verpasst ⇒ Nachforderung 0 (INV-26); Σ Umlage + Eigentümeranteil = Σ Kosten; Leerstand (INV-36).
+**Phase.** P3 (Hausgeld-Übersetzung ETW minimal), P4 (komplett), P5 (MFH, Gewerbe-Vorwegabzug), P7 (Contracting, NWG).
+
+### 2.10 WEG & Verwaltung (`weg/`)
+
+**Zweck.** WEG-Rahmen der ETW: Hausgeld, Wirtschaftsplan, Rücklage, Sonderumlage, ETV, Verwalter/SEV/Asset-Manager (→ 12 §3).
+
+**Zustand.** `Weg { id, einheiten: Array<{ eigentuemer: RtId | NpcId; meaBp: Bp }>, ruecklage: Cents, ruecklageSoll: Cents, wirtschaftsplan: Positionen[], beschluesse: Beschluss[], verwalter: DlId, npcProfile: Record<NpcId, 'SPARSAM'|'NEUTRAL'|'SANIERUNGSFREUDIG'> }`; Dienstleister `{ rolle, qualitaetBp, kostenModell, vertragBis }`.
+**Ablauf.** A03 monatlich Hausgeld (`HAUSGELD_UMLAGEF/NICHT_UMLAGEF`, `…_RUECKLAGE_ZUFUEHRUNG`); A09 Saison: Wirtschaftsplan, **ETV jährlich** (Quartal je WEG `[DES]`), Jahresabrechnung; Sonderumlage nach Beschluss mit Fälligkeit.
+**Kernlogik.**
+- `hausgeld = Σ Positionen × MEA-Anteil`; **Übersetzungstabelle** Hausgeld → Mieter-NKA: umlagefähiger Teil (Betriebskosten) → opex-Prüfkette; Verwaltervergütung, Rücklage, Reparaturen, Kontoführung, Versammlung, SEV, Prozesskosten → Eigentümer (nie umlagefähig). Modernisierungs-Sonderumlage nur über § 559.
+- **Beschlüsse** (Erneuerung Heizung/Dach, Elementarschutz, Umlageschlüssel § 16 Abs. 2, Solaranlage): Stimme nach `weg.stimmrecht` (Standard `MEA` [DES] bis LR-42 geklärt; Alternative `KOPF`), einfache Mehrheit `[GES]`; NPC stimmen nach Profil × Finanzlage; Ergebnis wahrscheinlichkeitsbasiert aus Profilen (`WEG`-Strom), **verdeckt** bis ETV (WEG-Unterlagen decken Historie auf, 2.4).
+- **Rücklage vs. Eigentümer-Reserve:** WEG-Rücklage (Gemeinschaftseigentum) ≠ kalkulatorische `Instandhaltungsreserve` des Spielers; Sondereigentum (Bad, Boden, Küche, Therme) trägt der Eigentümer allein.
+- **Verwalter-Qualität** beeinflusst Fehlerraten (opex), Rücklagenplanung, Ausschreibungsdisziplin; **SEV/Hausverwalter/Asset-Manager** gemäß Delegationsmatrix 12 §8.3 (Aufgaben ↔ Kosten ↔ AP).
+- **MFH:** keine WEG; Eigentümer allein (Verwaltungsrolle direkt); **Aufteilung MFH → ETW** (P7): Gates Milieuschutz → Abgeschlossenheit → Aufteilungsplan, Vorkaufsrecht § 577, Sperrfrist § 577a (5 J. in gelisteten NI-Gemeinden), § 250 BauGB nur mit VO; Gewinn `Σ Einzelpreise − Gesamtpreis − Kosten`; **gewerblicher Grundstückshandel**-Warnung (2.13).
+
+**Parameter.**
+
+| ID | Wert | Status |
+|---|---|---|
+| `weg.hausgeld.eur_qm`, `weg.umlagequote` | je Baujahr/Ausstattung | `[GES]` LR-42 |
+| `weg.ruecklage.soll`, `weg.sonderumlage.rate/hoehe` | aus Bauteilmodell (2.11) | `[GES]` LR-42/43 |
+| `weg.verwaltung.kosten.*` (Hausverwalter, SEV, Asset-Mgr, WEG-Verwalter) | €/Einheit/Mon. | `[GES]` LR-42 (II.-BV-§-26-Sätze nur preisgebunden, **nicht** übernehmen) |
+| `weg.beschluss.quorum`, `weg.stimmrecht` | einfache Mehrheit; MEA | `[GES]`/`[DES]` LR-42 |
+| `weg.aufteilung.*` (Kosten, Dauer) | | `[GES]` LR-49 |
+
+**Entscheidungen.** Abstimmung, Verwalterwechsel/-kündigung, Verwalter-/SEV-Beauftragung, Rücklagenhöhe beantragen, Aufteilung (P7).
+**Ereignisse.** E-22 Sonderumlage, ETV-Einladung (stoppend), Beschluss gefasst/abgelehnt, Verwalterproblem, Abrechnung verspätet. **LÜCKEN.** LR-42, LR-43, LR-49. **Tests.** Σ MEA = 100 %; Hausgeld-Übersetzung vollständig (jede Position genau einmal); Sonderumlage nie umlagefähig; Beschluss deterministisch je `(WEG, monat, beschluss)`.
+**Phase.** P3 (Hausgeld ETW), P4 (Wirtschaftsplan, Rücklage, Sonderumlage, ETV, Delegation), P5 (MFH-Verwaltung), P7 (Aufteilung).
