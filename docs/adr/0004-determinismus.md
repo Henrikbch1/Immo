@@ -6,4 +6,5 @@
 - PRNG zählerbasiert: `rand(seed, domain, monthIndex, entityId, k)` (SplitMix-Hash).
 - Verbote in `sim-core` (geprüft durch `tools/check-sim-core.mjs` in `pnpm lint`): `Math.random/pow/exp/log`, `**`,
   `Date`, `crypto`, DOM/I/O.
-- Golden-Hash-Test über 480 Monate in Node und Browsern (ab Z2).
+- Golden-Hash-Test über 480 Monate in Node und Browsern (ab Z2). Z2: SHA-256 in reinem TS (`pruefsumme.ts`, kein `crypto`),
+  kanonische Serialisierung (Schlüssel sortiert, NaN verboten); Referenzszenario `referenz.ts`; Node = Chromium geprüft.
