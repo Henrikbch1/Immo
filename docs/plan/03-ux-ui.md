@@ -1949,7 +1949,7 @@ Alle Ausgaben laufen über `Intl.NumberFormat('de-DE')` bzw. `Intl.DateTimeForma
 | Barrierearm | Satzlänge ≤ 20 Wörter in Ebene 1, aktive Verben, Abkürzungen beim ersten Auftreten ausgeschrieben (AfA = Absetzung für Abnutzung) |
 | Konsistente Begriffe | Ein Wort je Konzept (Glossar S-34 ist Quelle): Kaltmiete (nicht Nettomiete), Reichweite (nicht Runway), Beleihung (nicht LTV im Fließtext, LTV im Glossar als Synonym) |
 | Status-Wörter | belegt · abgeleitet · geschätzt · Vereinfachung (Flag DESIGN) |
-| Inklusiv, ohne Gendersonderzeichen | neutrale Formulierungen („Mietende“ sparsam; Rollen wie „Mieter-Bewerbung“); Entscheidung dokumentiert im Glossar der Schreibregeln |
+| Inklusiv, ohne Gendersonderzeichen | **Entscheidung E8 (27.11.2026): kein Gendern.** Normale Schreibweise ohne Sonderzeichen, neutral formulieren wo natürlich („Person“, „Mietinteressenten“) |
 | Texte als Schlüssel | Paraglide/Inlang-Nachrichten, Plurale, Platzhalter für Formatter (K-01); kein String im Rechenkern |
 
 **Beispiele**

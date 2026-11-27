@@ -13,6 +13,8 @@
 | E3 | 26.11.2026 | **Echte Regionen, generierte Objekte**; fehlende Werte sichtbar „geschätzt“ | Trainingsbezug zur echten Suche; Vault hat 12.588 Gebiete |
 | E4 | 26.11.2026 | **Start Nov. 2026 + simulierte Zukunft + historische Szenarien** | aktuelles Training + „Was wäre wenn 2012/2022“ |
 | E5 | 26.11.2026 | **Alten Code verwerfen** (Ideen bleiben) | Audit: Architektur- und Balancing-Fehler (`../research/01-…`) |
+| E7 | 27.11.2026 | **Fokusländer Niedersachsen, NRW, Bremen** (O9 erledigt) | Vorgabe Auftraggeber; Details `09-fokuslaender.md` |
+| E8 | 27.11.2026 | **Kein Gendern** | Vorgabe Auftraggeber; ersetzt 03 §5.2-Regel |
 | E6 | 26.11.2026 | **IC-Vault = Single Source of Truth** für Fakten, Export-Snapshot ans Spiel | Quellenpflicht, Trennung Fakt/Spielmechanik |
 
 ---
@@ -31,7 +33,7 @@ Wenn du nichts anderes sagst, gilt die Empfehlung. **Fett** = vor der genannten 
 | O6 | Sprachen | nur Deutsch; i18n-Bibliothek trotzdem von Anfang an | P0 |
 | O7 | Anrede in Texten | **du** (Lernspiel, Community-Ton) | P3 |
 | O8 | Zeitbudget-Mechanik (Stunden/Monat) | ja, als DESIGN gekennzeichnet und abschaltbar | P4 |
-| **O9** | **Fokusländer für die Datenhärtung in P2** | Bremen + Niedersachsen (Vault-Daten), NRW (offene Daten, dl-de/zero) **+ dein Wohn-/Zielort** | **P2** |
+| ~~O9~~ | ~~Fokusländer~~ → **entschieden als E7**; offen nur noch: dein Wohn-/Zielort als Startregion | – | P2 |
 | O10 | Vault-Erweiterung durch Agents (Strang W) | Agents erweitern den Vault in Batches (≤ 20 Notizen), mit Lint und Bericht; Freigabe je Batch durch dich | P2 |
 | O11 | Hosting | Cloudflare (Workers Static Assets); eigene Domain später | P0 |
 | O12 | Repo-Sichtbarkeit | privat bis Release | P8 |

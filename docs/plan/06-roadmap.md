@@ -72,7 +72,7 @@ W  ═════════════════════════�
 
 **Demo:** Auf der Karte einen Kreis anklicken → Kennzahlen mit Stand, Quelle, Status „gemessen/geschätzt“.
 
-**Strang W in P2:** Lücken A1–A5 (`05-…` §6.2) schließen, mindestens für 2–3 Fokusländer (Vorschlag: Bremen, Niedersachsen, NRW, Sachsen).
+**Strang W in P2:** Lücken A1–A5 (`05-…` §6.2) schließen, mindestens für 2–3 Fokusländer (entschieden E7: Niedersachsen, NRW, Bremen – Details `09-fokuslaender.md`).
 
 ---
 
