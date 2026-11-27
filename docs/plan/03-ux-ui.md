@@ -1474,3 +1474,675 @@ Texte erzeugt der Rechenkern nie; er liefert Schlüssel und Parameter, die UI fo
 | **Statusmeldung** | „Gespeichert“, „83 Angebote“, „Simulation bei Feb. 2027“ | – | unsichtbare Live-Region (höflich), entprellt, nie auf großen Containern (Audit 5.7) |
 | **Posteingang** | Ereignisse mit Handlungsbedarf | Routine | Badge + Stopp-Regel |
 
+
+> **Querverweise (Nummerierung):** Frühere Abschnitte verweisen auf „Kap. 3.9“ (Jahresabschluss-Ablauf → hier **3.7**), „Kap. 3.11“ (Modell-Progression, Musterprüfung → hier **3.8.2** und **3.11**), „Kap. 5.2“ (Figuren siezen → **5.2**), „Kap. 5.4“ (Start-Disclaimer → **5.4**), „Kap. 4.4“ (Zielgrößen → **4.4**), „Kap. 7.1/7.3“ (DoD, Usability-Aufgaben → **7.1/7.3**). Die Kapitelnummern 4.4, 5.2, 5.4, 7.1 und 7.3 sind unten bewusst so vergeben.
+
+### 3.6 O-08 Krisen-Flow · [P5] (Szenario „Erste Krise“ bereits in P3 als Skript)
+
+**Zweck:** Scheitern ist ein Prozess mit Warnungen, Optionen und Lernertrag, nie ein plötzliches Game Over (B9, B13 Nr. 13, AK-S43-2). Der Flow verbindet Cockpit-Banner, Liquiditäts-Screen (S-27), Entscheidungsdialoge (O-04) und die Krisen-Analyse (S-43).
+
+**Eskalationsstufen (Zustandsautomat des Rechenkerns, UI zeigt nur den Zustand):**
+
+| Stufe | Auslöser (Beispiele, Schwellen aus Fachspezifikation 10/12) | Anzeige | Zeitleiste |
+|---|---|---|---|
+| **0 solide** | Reichweite ≥ Reserve-Schwelle (Standard 6 Monate Ausgaben) | nichts Besonderes | normal |
+| **1 Frühwarnung („beobachten“)** | Prognose zeigt Lücke in ≤ 12 Monaten **oder** Reserve < Schwelle | Risiko-Indikator „beobachten“ (K-07), Mentor-Hinweis (Standard/Lernmodus), Eintrag im Posteingang „Liquidität: Lücke ab Aug. 2027 absehbar“ (Info, kein Badge) | Stopp-Regel „Liquiditätslücke absehbar“ (einmal je Lücke) |
+| **2 Kritisch** | Lücke in ≤ 3 Monaten oder Reichweite < 1 Monat | Banner (K-24) in jedem Screen, Zeitleiste zeigt „Liquidität kritisch“ (Warn-Icon + Text) | **hält an**, jedes „Weiter“ fragt vorher nach Option (Menü: „Trotzdem weiter“ im Profi-Modus) |
+| **3 Zahlungsstörung** | Rate/Hausgeld nicht bezahlbar | Pflicht-Entscheidung im Posteingang (O-04) mit Frist ≤ 1 Monat; Bank-Brief (Mahnung) | hält an |
+| **4 Kündigung & Zwangsversteigerung** | Kreditkündigung nach Verzug, Terminbestimmung Versteigerung (realistische Monate Vorlauf) | Tracker (K-14) „Zwangsversteigerung“ mit Terminen; letzte Optionen (Freihandverkauf, Vergleich) | hält an bis Entscheidung |
+| **5 Lauf-Ende** | Versteigerung vollzogen oder Insolvenz | Übergang zu S-43 | Spiel pausiert |
+
+Zwischen jeder Stufe liegt mindestens ein Spielmonat, außer ein Einmalereignis (Großschaden) löst Stufe 2 direkt aus; dann steht die Frist im Dialog. Rückstufung ist möglich (Stufe 2 → 1, wenn Gegenmaßnahmen wirken); Banner und Zeitleiste folgen dem Zustand.
+
+**3.6.1 Frühwarnung (Stufe 1)**
+
+- Auftritt **dreifach, aber ruhig**: Risiko-Indikator in der Liquiditätskachel (S-06), Karte „Frühwarnung“ in S-27 mit Datum der Lücke und Bandbreite („Lücke ab Aug. 2027, −2.400 bis −5.800 €“), ein Mentor-Hinweis (O-03, max. einer). Kein Modal, kein Ton.
+- Die Warnung nennt **Ursache und Hebel** in einem Satz: „Ab Aug. 2027 fehlen Geld für Rate und Hausgeld, weil die Zinsbindung von D2 endet (+121 €/Monat) und die Sonderumlage fällig wird.“ Jeder Wert öffnet O-01.
+- Eingang jeder Frühwarnung wird mit Datum in der Chronik (S-10) abgelegt; S-43 liest sie von dort (AK-S43-1).
+
+**3.6.2 Optionen mit Folgenvorschau (Stufen 2–3)**
+
+Eine Entscheidung „Liquiditätslücke schließen“ im Format O-04: Optionskarten sind **kombinierbar** (Mehrfachauswahl, Summe wird live gezeigt), dazu eine Deckungsleiste „Lücke gedeckt: 71 %“ (Bullet Graph, K-07-Variante).
+
+| Option | Einmalkosten / Preis | Monatseffekt | Risiko & Nebenwirkung | Lerninhalt |
+|---|---|---|---|---|
+| **Kosten senken** (Sparrate aussetzen, Maßnahmen verschieben) | 0 € | + Spielraum | Verschiebung kann Schaden vergrößern | Instandhaltung vs. Liquidität |
+| **Kontokorrent/Dispo** | Zins ~11–13 % p. a. | − Zinsen | teuer, Limit begrenzt | Kosten kurzfristiger Liquidität |
+| **Bankgespräch** (Tilgungsaussetzung, Stundung) | ggf. Gebühr, Bonitätsvermerk | − Tilgung, + Zinslast | schlechtere Konditionen im Rahmen (S-29) | Bankbeziehung |
+| **Nachschuss aus Gehalt/Rücklagen** | – | − verfügbares Einkommen | Reserve privat sinkt | Haushaltsrechnung |
+| **Objekt verkaufen** (Notverkauf) | Abschlag 5–15 %, Vorfälligkeitsentschädigung, ggf. Steuer | − Miete, − Rate | unumkehrbar → **Prüfschritt O-05**; Dauer realistisch 3–6 Monate | Verkaufsprozess unter Druck |
+| **Nichts tun** | – | Standardfolge ausdrücklich: „Rate Aug. 2027 platzt, Mahnung durch die Bank“ | → Stufe 3 | Folgen von Untätigkeit |
+
+Regeln: jede Option zeigt **Wirkungsbeginn** und die **Reichweite danach**; Optionen, die das Problem nur verschieben, tragen den Hinweis „löst die Lücke bis Nov. 2027, danach erneut“. Der Mentor-Check (Lernmodus) fragt: „Was passiert in 6 Monaten, wenn die Miete weiter ausfällt?“ Kein Druck-Countdown; die Frist steht als Datum (K-08).
+
+**3.6.3 Zwangsversteigerung (Stufe 4) und Lauf-Ende (Stufe 5)**
+
+- Erst erreichbar, wenn alle Optionen aus 3.6.2 **verbraucht oder abgelehnt** sind (Prüfung im Rechenkern, AK-O08-2). Der Flow zeigt im Tracker die realistischen Schritte (Verzug → Kündigung → Antrag → Verkehrswert → Termin) mit Monaten.
+- Auf jeder Stufe gibt es die **letzte Option „Freihandverkauf mit Bank abstimmen“**; sie ist teuer, aber besser als Versteigerung (Folgenvorschau zeigt beide Erlöse).
+- Übergang zu S-43 mit ruhigem Ton: Überschrift „Dieser Lauf endet hier. Das ist eine realistische Folge, kein persönliches Versagen.“ Kein Rot-Vollbild, keine Animation, kein Sound. Fokus auf die Überschrift, Screenreader-Ansage „Lauf beendet, Analyse verfügbar“.
+
+**3.6.4 Krisen-Analyse (S-43) – Ablauf**
+
+| Schritt | Inhalt | Regel |
+|---|---|---|
+| 1 Zeitstrahl | Entscheidungen, Tagebuch-Einträge, Frühwarnungen, Ereignisse (Zins, Leerstand, Schaden) in einer geordneten Liste | Unterscheidung **Entscheidung** vs. **Pech/Glück** nach Informationsstand damals |
+| 2 Kennzahlen-Verlauf | Liquidität, Reichweite, Beleihung bis Lauf-Ende, mit Marken „Frühwarnung gegeben“ | Tabellen-Fallback |
+| 3 Drei Lehren | konkret, mit Link zu Mikro-Lektion und Glossar | nie mehr als drei |
+| 4 Schattenrechnung | „Mit 6 statt 3 Monaten Reserve wäre die Lücke gedeckt gewesen“ + „damals erkennbar: ja/nein“ | gleiche Regeln wie 3.7.4 |
+| 5 Weiter | je Modus (nächste Tabelle) | Optionen immer sichtbar |
+
+**3.6.5 Erholung je Modus**
+
+| Modus | Angebot | Mitgenommen | Primärknopf |
+|---|---|---|---|
+| **Lernmodus** | Checkpoint-Liste (automatisch vor jeder Prüfschritt-Aktion und zu Jahresbeginn); Vorschlag: der letzte Checkpoint **vor** der ersten Entscheidung der Ursachenkette | alles; Tagebuch bleibt, Analyse wird an den Checkpoint „geheftet“ | **„Zurück zum Entscheidungspunkt (Mär. 2027, vor Kauf Lindenau)“** |
+| **Standard** | „Szenario neu starten“ (gleicher Seed) oder „Neuer Lauf mit meinen Erkenntnissen“ (neuer Seed, Vorsatz als Lernziel) | Glossar-Fortschritt, Meilensteine, Debriefs, Analysen; **kein Geld** | **„Neuer Lauf mit Vorsatz starten“** |
+| **Ironman** (Challenges) | kein Zurück; Analyse bleibt abrufbar | Analyse, Meilensteine | „Analyse speichern“ |
+| **Gezieltes Krisenszenario** (Zinsanstieg, Großschaden, Mietausfall; S-32/S-33) | Wiederholung mit anderer Strategie, Vergleich der Läufe nebeneinander | Läufe im Debrief-Archiv | „Mit anderer Strategie erneut versuchen“ |
+
+**Microcopy-Beispiele:** Frühwarnung „Reichweite: 2,1 Monate. Deine Reserve-Schwelle liegt bei 6.“ · Stufe 2 „Dir fehlen im Aug. 2027 voraussichtlich 2.400 bis 5.800 €. Du hast noch 4 Monate, das zu ändern.“ · Analyse „Das hättest du am 14. Jan. 2027 sehen können: Warnung ‚Lücke absehbar‘.“ (sachlich, keine Schuldzuweisung).
+
+**Akzeptanzkriterien:**
+- AK-O08-1: Jede Stufe 1–4 hat Anzeige, Optionen und Standardfolge; kein Lauf-Ende ohne Durchlauf von Stufe 2 (Ausnahme Ironman-Challenge mit Hinweis im Start-Dialog).
+- AK-O08-2: Stufe 4 ist nur erreichbar, wenn jede Option aus 3.6.2 gewählt, verbraucht oder abgelehnt wurde; Test per Simulationslauf mit Zufallsstrategien (kein Game Over in < 3 Spielmonaten nach Stufe 1).
+- AK-O08-3: Keine Warnung wird nur über Farbe, nur über Ton oder nur über Toast gegeben (Icon + Text + Banner, Live-Region „höflich“ bei Stufenwechsel, „bestimmt“ nur bei Stufe 3).
+- AK-O08-4: Krisen-Banner ist einklappbar, aber nicht wegklickbar, solange Stufe ≥ 2; Tastatur: Banner-Aktion erreichbar in ≤ 3 Tab-Stopps vom Seitenanfang.
+- AK-O08-5: Erholungs-Knöpfe nennen Ziel und Datum; Ironman zeigt keinen „Zurück“-Knopf.
+
+### 3.7 O-09 Jahresabschluss-Sequenz · [P4 Abschluss · P6 Debrief vollständig]
+
+**Zweck:** Der Jahreswechsel bündelt Pflichten (Abrechnungen, Steuer) und den wichtigsten Lernmoment (Debrief nach After Action Review, B8). Inhalte der fünf Debrief-Karten stehen in S-36; hier steht der **Ablauf** davor und darum.
+
+**3.7.1 Auslöser und Ablauf**
+
+| Phase | Auslöser | UI | Dauer |
+|---|---|---|---|
+| **A Vorankündigung** | Nov. des Jahres: Stopp-Regel „Jahresabschluss in 2 Monaten“ (Standard) | Posteingang-Info + Kalender-Einträge (S-40): NK-Abrechnungsfristen, WEG-Jahresabrechnung, Steuer | – |
+| **B Abschluss-Monat** | „Weiter“ von Dez. auf Jan. | Simulation läuft durch, hält **vor** dem Debrief an: Zeitleiste „Jahresabschluss 2027 bereit“ | – |
+| **C Pflichten (Entscheidungen)** | direkt nach B | Posteingang-Gruppe „Jahresabschluss 2027“ (gebündelt, 1 Badge-Einheit je Entscheidung): NK-Abrechnung je Objekt, WEG-Jahresabrechnung prüfen, Steuererklärung | beliebig, Frist je Item |
+| **D Jahresbericht** | nach B, parallel zu C abrufbar | S-31 „Dein Investmentjahr 2027“ | 1–2 Min. lesen |
+| **E Debrief** | nach B (ab Lernmodus automatisch angeboten, Standard: Einladung, Profi: Link im Bericht) | 5 Karten (S-36) | 3–5 Min. |
+
+Reihenfolge ist nicht erzwungen: Debrief kann vor den Pflichten erfolgen; die Zeitleiste zeigt „2 Pflichten offen“ statt zu blockieren. Das Spiel läuft erst weiter, wenn Pflichten mit **Frist im Folgemonat** entschieden sind (Standardfolgen akzeptieren ist möglich).
+
+**3.7.2 NK-/WEG-Abrechnung (Phase C)**
+
+| Schritt | Inhalt | Regeln |
+|---|---|---|
+| 1 Prüfung der WEG-Abrechnung (WEG-Objekte) | Posten gegen Wirtschaftsplan, Umlagefähigkeit (umlagefähig / nicht umlagefähig), Instandhaltungsrücklage | Abweichungen > 10 % markiert; Beschluss-Hinweis |
+| 2 Betriebskostenabrechnung erstellen | Umlageschlüssel, Vorauszahlungen, Heizkosten, CO₂-Kostenaufteilung; Ergebnis **Nachzahlung/Guthaben je Einheit** | Fristhinweis (12 Monate nach Abrechnungszeitraum, Spielwelt-Vereinfachungen gekennzeichnet) |
+| 3 Versand | Option „versenden“ (umkehrbar bis Monatsende → Vormerken, O-14) | nach „Weiter“ wirksam; Mieterreaktion als Ereignis im Folgemonat |
+
+Ansicht: Tabelle je Einheit (K-09) mit Spalten Vorauszahlung · Kosten · Saldo · Frist; Wasserfall (K-13) „Vorauszahlungen → Kosten → Saldo“; Fehler bei nicht umlagefähigen Posten zeigen **Regelverweis** (O-01 Ebene 3).
+
+**3.7.3 Steuer (Phase C, S-30)**
+
+Karte „Einkommensteuer 2027 (Vereinfachung: ohne Soli und Kirchensteuer)“: Einkünfte V+V je Objekt (Mieten − Werbungskosten − AfA), Effekt auf Steuer (Erstattung oder Nachzahlung im Folgejahr), Verweis auf Szenario-Hinweis. Primär **„Steuererklärung 2027 einreichen“** (vorgemerkt, Wirkung mit Bescheid in 3–6 Monaten, sichtbar im Kalender). Jede Zahl mit Erklär-Karte und Disclaimer-Kurzhinweis (5.4: „Spielvereinfachung, keine Steuerberatung“).
+
+**3.7.4 Jahresbericht und Debrief (D, E)**
+
+- **Jahresbericht** (S-31): Vermögens-Wasserfall, 4 Kernkennzahlen mit Δ, wichtigste Entscheidungen, Lernfortschritt, Fristen des nächsten Jahres, **eine** Reflexionsfrage; Export PDF/Bild optional [P8], ohne Rangliste.
+- **Debrief** (S-36, nach AAR): 1 Was war geplant · 2 Was ist passiert · 3 Warum (Entscheidung vs. Pech/Glück) · 4 Was mache ich anders. Bewertungsraster statt Gesamtpunktzahl.
+- **Schattenrechnung:** je Debrief höchstens 2 Entscheidungen; Auswahl nach Wirkung (größter Unterschied zur stärksten Alternative) und Lernwert. Darstellung: Zwei-Spalten-Karte „Dein Weg“ vs. „Alternative“ mit Δ in €/Monat und Vermögen nach 5 Jahren (Bandbreite), darunter die Zeile **„Damals erkennbar besser: nein/ja/teilweise“** mit Begründung („Zinsvorsprung ab März 2027 war im Dezember 2026 nicht absehbar“). Die Rechnung nutzt ausschließlich den **Informationsstand-Snapshot** der Entscheidung (Tagebuch).
+- **Fehlerkultur:** Wortwahl „Lehrgeld“ erlaubt, kein „Fehler gemacht“ gegen die Person; Bewertungsebene Aufgabe/Prozess.
+
+**3.7.5 Zustände und Abkürzungen**
+
+| Zustand | Verhalten |
+|---|---|
+| Erstes Jahr ohne Objekt | Pflichten entfallen; kurze Sequenz (Zahlen, Lernfortschritt, Vorsatz) |
+| Krisenjahr | Karte 3 mit Krisenverlauf, Link zu S-43 |
+| Profi | Pflichten als Tabelle auf einer Seite, Debrief als eine Seite, überspringbar |
+| Unterbrochen | „Später fortsetzen“ speichert Stand; Zeitleiste „Debrief offen“ (kein Badge) |
+| Mobil | je Karte Vollseite, Fortschritt „3 von 5“, Knöpfe in Daumenzone |
+
+**Akzeptanzkriterien:**
+- AK-O09-1: Phase B hält immer an; Pflichten haben Frist, Standardfolge und Folgenvorschau; Jahresabschluss ist in ≤ 8 Minuten inkl. Debrief durchspielbar (Test).
+- AK-O09-2: Debrief ist jederzeit überspringbar, fortsetzbar und über S-36 erneut abrufbar; Überspringen wird nicht bestraft (keine Sperren, kein Text mit Schuld).
+- AK-O09-3: Schattenrechnung zeigt immer „damals erkennbar besser: …“ mit Begründung; fehlt der Snapshot, wird sie nicht angezeigt (statt zu raten).
+- AK-O09-4: Steuer- und NK-Zahlen sind Kennzahl-Objekte (O-01) mit Vereinfachungen und Rechtsgrundlage.
+
+### 3.8 Onboarding-Szenario „Die erste Wohnung“ (K1) · [P3 Ablauf · P6 Lernpfad-Einbindung]
+
+**Ziel (B7):** In unter 2 Minuten zur ersten echten Entscheidung, ohne Textwand und ohne Registrierung. Das Tutorial **ist** ein Szenario im normalen Spiel, mit denselben Screens und Regeln. Kein separater Tutorial-Modus, keine Modal-Ketten, höchstens ein Hinweis (Coachmark, O-12) pro Bildschirm, immer überspringbar.
+
+**3.8.1 Schritt für Schritt**
+
+| Nr. | Schritt | Screen | Was die Spielerin tut | Hilfe (Lernmodus) | Lernziel |
+|---|---|---|---|---|---|
+| 0 | Start-Disclaimer (einmalig) | S-02 | liest drei Sätze, „Verstanden, los geht’s“ | – | Rahmen (5.4) |
+| 1 | Startprofil in 3 Schritten | S-02 | Profil „Lena, 29“ wählen (oder „Mein echtes Profil“ / „Ich kenne mich aus“) | Zahlen sind fertig vorbelegt, Erklär-Karte an „Eigenkapital“ | Ausgangslage |
+| 2 | Cockpit-Erstblick | S-06 | sieht 5 Kacheln, Zeitleiste „Nov. 2026 · 1 offen“ | **ein** Coachmark auf „Posteingang“ | Orientierung |
+| 3 | Erster Posteingang-Eintrag | S-08/S-09 | „Suchauftrag anlegen?“ (Entscheidung mit Frist, Standard: „Vorschlag übernehmen“) | Optionen mit Lernhinweis | Entscheidung treffen |
+| 4 | „Weiter“ → 3 Angebote | S-11 | Zeitleiste „Weiter“, Monat läuft, Treffer erscheinen | Coachmark „Weiter“ | Zeitmodell |
+| 5 | **Angebot 1: Musterprüfung** | S-13/S-14 | folgt der Musterlösung (3.8.2), klickt „Weiter“ durch 5 Schritte | vollständig geführt | Bierdeckel → Vollkalkulation |
+| 6 | **Angebot 2: Fading** | S-13/S-14 | füllt 2 von 5 Schritten selbst, Rest vorausgefüllt, „Prüfe meine Antwort“ | Hinweise nur auf Abruf | Kennzahlen deuten |
+| 7 | **Angebot 3: allein** | S-13/S-14 | prüft ohne Führung, optional „Mentor-Check“ | nur Abruf | Transfer |
+| 8 | Finanzierungsanfrage | S-17 | Anfrage stellen; erste Absage oder Zusage mit Begründung | Absage erklärt, „Finde heraus, warum die Bank abgelehnt hat“ funktioniert in < 60 s | Bankrechnung verstehen |
+| 9 | Gebot und Kauf | S-18/S-19 | Gebot abgeben, Tracker beobachtet, Prüfschritt O-05 vor Beurkundung | Checkpoint vor Prüfschritt | Prozess, Dauern |
+| 10 | Erste Vermietung | S-23 | Inserat, Bewerberauswahl | ein Coachmark | Vermieten |
+| 11 | 12 Monate spielen | S-06/S-07 | „Weiter“ bis Ereignis, erster Monatsbericht | Monatsbericht-Coachmark „Was ist passiert?“ | Kennzahlen im Zeitverlauf |
+| 12 | Kauf-Review und erster Debrief | S-42/S-36 | erwartet vs. tatsächlich, ein Vorsatz | Leitfragen sichtbar | Reflexion |
+
+Erwartete Dauer: Schritte 0–4 ≤ 3 Minuten, bis zur ersten Kaufentscheidung ≤ 20 Minuten (Usability-Test 2 misst das). **Gezieltes Scheitern** (Productive Failure) kommt erst ab Szenario 2 (K2), nie in K1.
+
+**3.8.2 Worked Example „Musterprüfung“ bei Angebot 1**
+
+Fünf Schritte; links Angebot, rechts Musterlösung (Desktop: 2 Panes; mobil: Schritt-für-Schritt-Sheet). Jeder Schritt zeigt **Aufgabe, Musterlösung mit echten Werten, „Warum so?“ (O-01)**. Beispielwerte sind illustrativ.
+
+| Schritt | Aufgabe | Musterlösung (Beispiel) | Gelernte Kennzahl |
+|---|---|---|---|
+| 1 Bierdeckel | Brutto-Mietrendite und Kaufpreisfaktor | „Kaltmiete 690 €/Monat × 12 = 8.280 € ÷ 189.000 € = 4,4 %. Faktor 22,8.“ | EK:rendite.brutto |
+| 2 Nebenkosten | Kaufnebenkosten dazurechnen | „+ Grunderwerbsteuer, Notar, Makler (Spielwerte, Stand ausgewiesen) = 207.700 € Gesamtinvestition“ | EK:invest.gesamt |
+| 3 Laufende Kosten | nicht umlagefähige Kosten, Instandhaltung, Mietausfallreserve | „− 95 € − 81 € = 514 € vor Zinsen“ | EK:cf.vorFinanzierung |
+| 4 Finanzierung | Rate bei Zins und Tilgung | „Darlehen 170.000 €, 3,8 % + 2 % Tilgung → 822 €/Monat“ | EK:finanzierung.rate |
+| 5 Ergebnis | Cashflow nach Steuern deuten | „−186 €/Monat vor Steuern, +38 € nach Steuern: Steuereffekt (vereinfacht) trägt den Cashflow. Frage: Reicht dir die Reserve, falls die Erstattung später kommt?“ | EK:cf.nachSteuern |
+
+Darstellung: pro Schritt ein Mini-Wasserfall (K-13) mit Tabellen-Fallback; die Spielerin klickt auf Zahlen, um zu **entdecken**, woraus sie bestehen („Tippe auf *Cashflow*“). Im Fading-Schritt (Angebot 2) sind Schritte 1, 2 und 4 vorausgefüllt, 3 und 5 eigenständig mit **sofortiger, konkreter Rückmeldung** („Fast: Du hast die Mietausfallreserve vergessen, das sind 28 € im Monat.“). Bei Angebot 3 gibt es nur die Prüfliste (K-14) ohne Werte.
+
+**3.8.3 Ausblenden der Hilfen (Fading) und Regeln**
+
+| Hilfe | K1 Angebot 1 | Angebot 2 | Angebot 3 | ab Szenario 2 | Profi |
+|---|---|---|---|---|---|
+| Musterlösung | sichtbar | verborgen, „Lösung zeigen“ | verborgen | verborgen | aus |
+| Coachmarks (O-12) | max. 1 je Screen, erstmalig | nur neue Screens | nur neue Screens | nur freigeschaltete Bereiche | aus |
+| Mentor (O-03) | proaktiv bei Tragweite | auf Abruf + Prüffragen | auf Abruf | je Kompetenz | auf Abruf |
+| Prüffragen im Dialog | 2–3 | 1–2 | 0–1 | nach Kompetenz | aus |
+| Glossar-Unterstreichung | jedes erste Auftreten | wie Lernmodus | wie Lernmodus | jedes erste Auftreten | nur in Erklär-Karten |
+
+Regel **Expertise-Umkehr:** Zeigen Prüfungen zweimal in Folge vollständig korrekte Antworten, wird die Hilfestufe für diese Aufgabe um eine Stufe gesenkt und das auch gesagt („Du prüfst sicher. Hinweise gibt es ab jetzt nur noch auf Abruf.“). Rücknahme jederzeit in S-04.
+
+**Expertenweg:** „Ich kenne mich aus“ in S-02 → Einstufungs-Check mit 5 Fragen (Dauer ≤ 2 Minuten, überspringbar) oder direkt Sandbox mit allen Systemen (Hilfestufe Profi). Der Check **ersetzt** das Szenario nicht zwangsweise; K1 bleibt in der Akademie (S-33) jederzeit startbar.
+
+**Skizze Schritt 5 (Desktop):**
+```
+┌ Angebot 1 · Muster-Prüfung · Schritt 3 von 5 ───────────────────────────── [Überspringen] ┐
+│ Exposé: Gohlis, 52 m², 189.000 €    │ Laufende Kosten                                     │
+│ Kaltmiete 690 €/M  [belegt]         │ Aufgabe: Was bleibt vor Zinsen?                      │
+│ Hausgeld 240 €/M  [laut Exposé]     │ Musterlösung: 690 − 95 − 81 = 514 €/Monat  ›         │
+│                                     │ [Warum so?]   [Zurück]            [Weiter: Finanzierung ▸] │
+└────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Akzeptanzkriterien:**
+- AK-S02-5: Von „Neues Spiel“ bis zur ersten Entscheidung im Posteingang ≤ 2 Minuten (Median im Test 2).
+- AK-K1-1: Kein Tutorial-Schritt blockiert die normale Navigation; Überspringen ist in jedem Schritt sichtbar; ein Coachmark höchstens einmal je Screen und Spielstand.
+- AK-K1-2: Musterlösung nutzt die echten Werte des Angebots und dieselben Kennzahl-Schlüssel wie der Kalkulator (keine eigene Tutorial-Rechnung).
+- AK-K1-3: Nach Abschluss von K1 sind Navigation und alle Bereiche unverändert sichtbar; neu Freigeschaltetes trägt „Neu“, taucht nie plötzlich auf (L8).
+
+### 3.9 O-06 Befehlspalette & Tastenkürzel · [P3 Grundfunktion · P6 Aktionen vollständig]
+
+**Zweck:** Schneller Zugriff für Profi-Persona PC; gleichberechtigter Weg für Tastaturnutzung (PE). Ersetzt keine Navigation und führt **keine Aktion mit Folgen direkt aus** (1.4).
+
+**Öffnen:** `Strg+K` / `⌘K`, Suchsymbol in der App-Leiste (mobil: Vollbild-Sheet K-19), `/` in Listen fokussiert die **Listenfilterung**, nicht die Palette.
+
+**Aufbau (Combobox + Listbox nach APG, `role="dialog"` mit `aria-modal`):**
+
+| Bereich | Inhalt | Beispiele (Eingabe → Ergebnis) |
+|---|---|---|
+| Eingabefeld | Platzhalter „Suchen oder Befehl eingeben …“, Rücksetz-Knopf | – |
+| Zuletzt benutzt | 5 Einträge, wenn Feld leer | „Kredite öffnen“, „Weiter bis Jahresende“ |
+| **Aktionen** | Navigation und Befehle | „weiter jahr“ → „Weiter bis Jahresende“; „sondertilgung“ → öffnet Sondertilgungs-Assistent (S-28) |
+| **Objekte & Einheiten** | nach Name/Adresse/Kürzel | „lindenau“ → Objekt-Detail Lindenau |
+| **Angebote** | Merkliste und aktueller Markt | „gohlis 189“ → Exposé |
+| **Glossar** | Begriffe | „afa“ → O-02 Glossar-Popover, Enter öffnet S-34 |
+| **Einstellungen** | Schalter/Bereiche | „dunkel“ → S-04 Darstellung |
+
+**Regeln**
+
+- Suche tolerant (Umlaute, Teilwörter, Tippfehler ≤ 1), de-DE-Kollation; Ergebnisse gruppiert, max. 5 je Gruppe, „Alle anzeigen“ je Gruppe.
+- Jeder Eintrag zeigt Icon, Titel, Kontext („Bestand › Lindenau“) und Tastenkürzel, falls vorhanden.
+- Pfeiltasten wählen, Enter führt aus, `Strg+Enter` öffnet in neuem Pane (Desktop), Esc schließt, Fokus kehrt zum Auslöser zurück. `aria-activedescendant` für die aktive Option; Trefferzahl als Statusmeldung („7 Treffer“, entprellt).
+- **Aktionen mit Folgen** (Sondertilgung, Kündigung, Verkauf) öffnen den zuständigen Dialog (O-04/O-05); Beträge sind nie über die Palette eingebbar.
+- Befehle sind **verfügbarkeitsabhängig**: nicht verfügbare werden nicht angezeigt, sondern per Suche mit Begründung gefunden („Mieterhöhung: erst ab Nov. 2027 möglich“).
+- Keine Tour-Befehle im Profi-Modus; im Lernmodus Befehl „Tour für diesen Bereich zeigen“.
+
+**Tastenkürzel (Ergänzung zur Tabelle in 1.4, gleiche Regeln)**
+
+| Kontext | Kürzel | Aktion |
+|---|---|---|
+| global | `Strg+K`, `?`, `Esc`, `Strg+Enter`, `Strg+Umschalt+Enter`, `g c/p/m/b/f/a` | siehe 1.4 |
+| global | `Strg+,` | Einstellungen |
+| Listen/Tabellen | `j`/`k`, Pfeile (Grid), `Enter` öffnen, `Leertaste` markieren, `Umschalt+Pfeil` Mehrfachauswahl | Navigation |
+| Listen | `/`, `f` | Filter fokussieren / Filter-Sheet |
+| Posteingang | `e` archivieren, `v` vormerken, `m` Mentor-Check (Einzeltasten) | Triage |
+| Kalkulator | `Strg+1/2/3` | Szenario A/B/C |
+| Erklär-Karte | `i`, `Pos1` zurück zur Wurzel, `Alt+←` Pfad zurück, `p` anheften | O-01 |
+| Dialoge | `Strg+Enter` Primäraktion nur, wenn Option gewählt; nie im Prüfschritt (dort Standardfokus „Zurück“) | O-04/O-05 |
+
+Alle Kürzel: in S-04 *Tastatur* umbelegbar, einzeln abschaltbar, Konfliktwarnung; Einzeltasten ruhen, solange der Fokus in einem Eingabefeld, in der Palette oder in einer Combobox liegt (WCAG 2.1.4). `?` zeigt die Übersicht (Dialog, gruppiert, durchsuchbar). Für Browser-Konflikte (Strg+K in Firefox-Adressleiste) gilt: `preventDefault` nur bei App-Fokus, Alternativkürzel `Strg+/`.
+
+**Akzeptanzkriterien:** AK-O06-1 alle Hauptziele (Cockpit, Post, Markt, Bestand, Finanzen, Akademie) in ≤ 3 Tastenanschlägen erreichbar; AK-O06-2 Aktionen mit Folgen öffnen immer Dialog, nie direkte Ausführung; AK-O06-3 Palette per Screenreader bedienbar (Ansage von Gruppe, Trefferzahl, aktiver Option); AK-O06-4 jedes Kürzel hat Text-Alternative in der Oberfläche und kann abgeschaltet werden.
+
+### 3.10 O-03 Mentor-Panel · [P3 Grundgerüst „Was kann ich hier tun?“ · P6 Mentor v1]
+
+**Rolle (B5.9):** neutrale Coach-Figur außerhalb der Spielwelt, in Textform, du-Form. Der Mentor erklärt, stellt Prüffragen und verweist auf Lektionen. Er **entscheidet nie**, wählt nie eine Option vor und gibt keine Anlageempfehlung („unter diesen Annahmen …“, 5.2). Texte in P6 sind **vorgenerierte, fachlich geprüfte** Bausteine mit Auslöser-Regeln, kein Live-Modell.
+
+**Zugang:** Fragezeichen-Knopf immer rechts in der App-Leiste (WCAG 3.2.6). Öffnet ein **nicht-modales Seitenpanel** (K-20) rechts (Desktop/Tablet) bzw. ein Bottom Sheet (mobil). Proaktive Hinweise (K-26) erscheinen als kleine Karte oben im Inhaltsbereich, nie als Modal, nie über Eingabefeldern, nie während Tippen.
+
+**Panel-Inhalt (feste Reihenfolge):**
+
+| Block | Inhalt |
+|---|---|
+| 1 Kontext | „Was kann ich hier tun?“ (3–5 Punkte, abhängig von Screen und Lage), je mit Aktion („Kalkulator öffnen“) |
+| 2 Prüffragen | 2–3 Fragen zur aktuellen Lage („Wie viele Monate reicht deine Reserve nach dem Kauf?“), Antworten auf Wunsch eingeklappt, mit Link zur Kennzahl |
+| 3 Lernen | passende Mikro-Lektion (Dauer), Glossar-Suche |
+| 4 Hilfe | Tastenkürzel, „Tour für diesen Bereich zeigen“, Hilfestufe ändern |
+
+**Proaktive Hinweise: Auslöser und Kalibrierung (nur hohe Tragweite und hohe Sicherheit, B5.9)**
+
+| Auslöser | Lernmodus | Standard | Profi |
+|---|---|---|---|
+| Kauf ohne Liquiditätsreserve | Hinweis + Prüffragen | Hinweis | – |
+| Zinsbindungsende in ≤ 12 Monaten ohne Anschlusslösung | Hinweis | Hinweis | – (Stopp-Regel reicht) |
+| Frühwarnung Liquidität (Stufe 1, 3.6) | Hinweis | Hinweis | – |
+| Erste Mieterhöhung zulässig | Hinweis | – | – |
+| Abgelaufene Prüfpunkte vor Beurkundung (O-05) | in O-05 | in O-05 | in O-05 |
+
+**Dämpfung:** höchstens **ein** proaktiver Hinweis je Bildschirmbesuch, höchstens 3 je Spielmonat. Jeder Hinweis bietet **„Warum zeigst du mir das?“**, **„Später“** und **„Nicht mehr zu diesem Thema“**. Häufigkeit sinkt mit nachgewiesener Kompetenz (Expertise-Umkehr, 3.8.3); ausgeblendete Themen sind in S-04 *Hilfe* wieder einschaltbar.
+
+**Zustände:** *Leer* („Hier gibt es gerade nichts Besonderes. Frag mich gern etwas: …“ mit Glossar-Suche) · *Hinweis aktiv* (Karte + Badge-loser Punkt am Fragezeichen, nur mit Text im Tooltip/Namen) · *Profi* (Panel unverändert, keine Hinweise) · *Offline* (alles lokal, kein Unterschied).
+
+**A11y:** Panel ist Region mit Überschrift, Fokus beim Öffnen auf die Panel-Überschrift, Esc schließt, Fokus zurück zum Auslöser; proaktive Karte ist `role="region"` ohne Fokusraub, höflich angekündigt („Hinweis vom Mentor: …“) und nur einmal.
+
+**Akzeptanzkriterien:** AK-O03-1 Mentor wählt nie eine Option und formuliert nie „Du solltest“; AK-O03-2 jeder proaktive Hinweis hat die drei Knöpfe; AK-O03-3 höchstens ein Hinweis je Bildschirm; AK-O03-4 Panel verdeckt nie fokussierte Eingabefelder (WCAG 2.4.11); AK-O03-5 Textbausteine tragen Quelle/Prüfdatum im Content-Paket (`fach-pruefer`).
+
+### 3.11 Modell-Progression im Lernpfad (Stufen der Darstellung) · [P3 Stufe 1–2 · P6 vollständig]
+
+Der Rechenkern rechnet **immer** den vollen Realismus (L7). Die Oberfläche blendet gestuft ein; was noch nicht eingeführt ist, wird **als vereinfacht angezeigt**, nicht weggelassen.
+
+| Stufe | Szenario/Lernpfad | Voll sichtbar | Vereinfacht angezeigt (Kennzeichnung) |
+|---|---|---|---|
+| 1 | K1 Erste Wohnung | Kaltmiete, Zins, Tilgung, Reserve | Nebenkosten, Instandhaltung, Leerstand als Pauschale („geschätzt, wird in K2 erklärt“); Steuern „vereinfacht: nach Steuern geschätzt“ |
+| 2 | K2 Bewirtschaftung | + Nebenkosten, Instandhaltung, Leerstand, Mieterhöhung | Steuern pauschal |
+| 3 | K3 Steuern | + AfA, Werbungskosten, Steuerwirkung | Anschluss/Zinsrisiko über Standardannahme |
+| 4 | K4 Anschlussfinanzierung | + Zinsbindung, Prolongation, Umschuldung, Zinsstress | Bankrahmen für Portfolio vereinfacht |
+| 5 | K5 Skalieren | + Beleihung, Kreditrahmen, Portfolio, Verkauf | – |
+
+Kennzeichnung im UI: Status-Flag **DESIGN/„Vereinfachung“** (K-06) + Text „Steuern: pauschal geschätzt, wird in Szenario 3 erklärt“ + Link zur Lektion. In Standard/Profi sind alle Stufen sichtbar (0.5). Wechsel der Stufe: Banner „Neu: Steuern sind jetzt aufgeschlüsselt“ mit Link, Navigation unverändert.
+
+---
+
+## 4. Design-System (`packages/ui`, Tokens in `packages/config`)
+
+**Prinzipien:** Tokens im DTCG-Format (2025.10) in drei Ebenen **Primitiv** (`color.blue.600`) → **Semantisch** (`color.text.default`, `color.status.critical.icon`) → **Komponente** (`kpi.tile.padding`). Build erzeugt CSS-Variablen für Tailwind 4 (`@theme`), Themes über `data-theme="hell|dunkel|kontrast"` und `data-dichte="komfortabel|kompakt"`. Komponenten verwenden **nur semantische Tokens** (Lint-Regel: keine Hex-Werte im Code). shadcn/ui-Bausteine auf Base UI werden über die Tokens umgestylt, nicht geforkt.
+
+### 4.1 Farben (semantisch, hell/dunkel)
+
+Kontrastziele: **Text ≥ 4,5:1** (großer Text ≥ 3:1), **UI-Elemente, Fokusring, Diagramm-Flächen und -Linien ≥ 3:1** gegenüber dem Hintergrund, jeweils in Hell **und** Dunkel. Die Werte unten sind der **Startvorschlag** (Kontrast gerechnet, WCAG-Formel); Designreview darf nachschärfen, nicht unterschreiten. CI prüft alle Token-Paare automatisch (Skript `tokens:kontrast`).
+
+| Semantisches Token | Hell | Kontrast | Dunkel | Kontrast |
+|---|---|---|---|---|
+| `bg.page` / `bg.surface` | `#FFFFFF` / `#F4F6F8` | – | `#0F1318` / `#181D24` | – |
+| `text.default` | `#14181F` | 17,8 : 1 auf Seite | `#E8EBEF` | 15,6 : 1 |
+| `text.muted` | `#454F5C` | 8,3 : 1 | `#A8B0BC` | 8,5 : 1 |
+| `text.subtle` (nur ≥ 14 px, nie für Pflichtinfo) | `#6B7482` | 4,7 : 1 | `#7C8695` | 5,1 : 1 |
+| `border.control` (Felder, Schalter, Karten mit Funktion) | `#6B7482` | 4,7 : 1 (≥ 3) | `#7C8695` | 5,1 : 1 |
+| `border.decor` (reine Trenner) | `#D5DAE1` | – | `#2B323C` | – |
+| `action.primary` (Fläche) / Text darauf | `#1F4FD8` / `#FFFFFF` | 6,6 : 1 | `#8FB0FF` / `#0F1318` | 8,7 : 1 |
+| `focus.ring` | `#1F4FD8` + 2 px Abstand | ≥ 3 : 1 | `#8FB0FF` | ≥ 3 : 1 |
+| `status.positive` (Text/Icon) auf Tönung | `#0B6B3A` auf `#E6F4EC` | 5,8 : 1 | `#5FD08A` auf `#12301F` | 7,4 : 1 |
+| `status.warning` | `#8A5300` auf `#FFF3DC` | 5,8 : 1 | `#F0B44C` auf `#37290F` | 7,6 : 1 |
+| `status.critical` | `#B3261E` auf `#FDECEA` | 5,7 : 1 | `#FF8A80` auf `#3A1B1A` | 6,8 : 1 |
+| `status.info` | `#1F4FD8` auf `#E8EEFD` | 5,7 : 1 | `#8FB0FF` auf `#16264A` | 7,0 : 1 |
+| `status.design` (Vereinfachung/DESIGN) | `#6A3FA8` auf `#F1EAFB` | 6,2 : 1 | `#C4A4F0` auf `#2A1E40` | 7,3 : 1 |
+
+**Regeln**
+
+1. **Status-Farben stehen nie allein:** immer Icon (Form unterscheidbar) **und** Text. Beispiele: solide = Kreis mit Haken, beobachten = Dreieck mit !, kritisch = Quadrat mit ×; Status-Flags mit Kürzel (B/Ä/G/D, 4.8 K-06).
+2. **Gut/schlecht ≠ Vorzeichen:** die Bewertungsfarbe folgt der Bewertungslogik der Kennzahl (steigende Beleihung ist `status.warning`, nicht grün). Delta-Pfeile sind neutral grau, Farbe nur bei Bewertung.
+3. **Datenfarben** (Diagramme, K-13): 6 kategoriale Farben mit ≥ 3:1 untereinander **und** gegen den Hintergrund, zusätzlich Muster/Form-Marker und direkte Beschriftung; sequenzielle Skalen einfarbig in 5 Abstufungen. Wasserfall: Zunahme/Abnahme über **Richtung und Vorzeichen** plus Farbe, Summen in Neutral.
+4. **Dunkel ist eigens abgestimmt** (keine Invertierung): geringere Sättigung, Tönungsflächen mit Fläche statt Linie, Elevation über hellere Fläche statt Schatten. Folgt `prefers-color-scheme`, manuell umschaltbar (S-04).
+5. **Hoher Kontrast** (Thema `kontrast`): Text 7 : 1, Rahmen 4,5 : 1, Fokusring 3 px, keine Tönungsflächen für Status (nur Rahmen + Icon).
+6. Verboten: Verläufe als Informationsträger, Rot/Grün als einzige Unterscheidung, Textfarbe `text.subtle` für Zahlen.
+
+### 4.2 Typografie
+
+| Token | Wert | Verwendung |
+|---|---|---|
+| Schriftfamilie | **Inter Variable** (Fallback IBM Plex Sans, `system-ui`), selbst gehostet, OpenType `tnum`, `cv11`, `ss01` aktiv wo sinnvoll (Lizenz prüfen: OFL) | alles |
+| `font.size` Skala (rem, Basis 16 px, nutzerskalierbar 90–150 %) | 12 · 13 · 14 · **16 (Basis)** · 18 · 20 · 24 · 30 · 36 | – |
+| `text.body` | 16/24 (kompakt 14/20) | Fließtext, Formulare |
+| `text.label` | 13–14/20, Gewicht 500, **kein Versalsatz** (Audit 5.2: 10-px-Versalien) | Kennzahl-Beschriftungen |
+| `text.kpi` | 30–36/1,1, Gewicht 600, `tabular-nums` | KPI-Kachel |
+| `text.table` | 14/20 (kompakt 13/18), `tabular-nums`, rechtsbündig | Tabellen |
+| `text.h1–h3` | 30 / 24 / 18, Gewicht 600 | Überschriften (genau eine `h1` je Screen) |
+| Zeilenlänge | 60–75 Zeichen im Fließtext (`max-w-prose`) | Erklär-Karte, Lektionen |
+
+Regeln: **`tabular-nums` nur in Tabellen, KPIs, Formularwerten, Diagrammachsen** und nie im Fließtext. Zahlenspalten rechtsbündig, gleiche Nachkommastellen je Spalte. Mindestschriftgröße 12 px (nur Fußnoten/Quellen), nie Pflichtinformation. Text auf 200 % und Textabstände (WCAG 1.4.12) ohne Verlust. Geschütztes Leerzeichen zwischen Zahl und Einheit; Zahl und Einheit brechen nie getrennt um (`white-space: nowrap`).
+
+### 4.3 Abstand und Größen
+
+| Token | Wert | Hinweis |
+|---|---|---|
+| `space` Skala (4-px-Raster) | 0 · 2 · 4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 | Tailwind-Skala wird auf diese Werte beschränkt |
+| `size.target.min` | **24 px** (WCAG 2.5.8 Minimum) | nur Dichte kompakt, Maus, nie Touch-Hauptaktion |
+| `size.target.touch` | **44 × 44 px** (Hausstandard) | Touch-Hauptaktionen, „Weiter“, Tab-Leiste, Bottom-Sheet-Knöpfe |
+| Container | Seite max. 1440 px, Lesespalte 720 px, Dialog 880 px, Erklär-Spalte 320–380 px | – |
+| App-Leiste | 56 px (kompakt 48) · Zeitleiste mobil 48 px · Tab-Leiste 56 px + Safe Area | zusammen mobil ≤ 104 px + Safe Area |
+| Breakpoints | 600 · 840 · 1200 (1.2) | Container Queries für Komponenten |
+
+### 4.4 Zielgrößen und Dichte
+
+| Merkmal | **Komfortabel** (Standard Lern/Standard) | **Kompakt** (Standard Profi) |
+|---|---|---|
+| Tabellenzeile | 48 px | 32 px |
+| Textgröße Tabelle | 14 px | 13 px |
+| Innenabstand Karten | 16–24 px | 8–12 px |
+| Klickfläche Tabellenzeile/Icon-Knopf | ≥ 44 px (Zeile) / 44 px | ≥ 24 px (Maus), Zeile 32 px |
+| Touch (Gerät mit grobem Zeiger, `pointer: coarse`) | Dichte wird **automatisch komfortabel** | gilt auch hier: Hauptaktionen 44 px |
+
+Dichte ändert **nie** die Zielgröße von Touch-Hauptaktionen (0.5), nie die Reihenfolge oder Sichtbarkeit von Information, nur Abstände und Zeilenhöhen.
+
+### 4.5 Radius, Rahmen, Elevation
+
+| Token | Wert | Verwendung |
+|---|---|---|
+| `radius.sm / md / lg / full` | 4 · 8 · 12 · 9999 px | Felder, Karten, Dialoge/Sheets, Badges |
+| `border.width` | 1 px (Funktion), 2 px (Fokus), 3 px (Kontrast-Thema) | – |
+| `elevation.0` | Fläche + 1 px `border.decor` | Karten im Fluss |
+| `elevation.1` | Schatten 0 1 2 / 0.08 | Sticky-Leisten (App-Leiste, Zeitleiste) |
+| `elevation.2` | Schatten 0 4 12 / 0.12 | Popover, Menü |
+| `elevation.3` | Schatten 0 8 24 / 0.16 + Scrim 40 % | Dialog, Bottom Sheet |
+| Dunkel | Elevation über Flächenaufhellung (`bg.surface` → `bg.raised`), Schatten ≤ 50 % | – |
+
+Maximal **eine** modale Ebene; Popover über Seite, nie über Sheet/Dialog (kein Stapeln, B13 Nr. 8).
+
+### 4.6 Motion
+
+| Token | Wert | Verwendung |
+|---|---|---|
+| `motion.duration.instant` | 0–80 ms | Fokus, Hover |
+| `motion.duration.fast` | 120 ms | Chips, Badges, Toast-Ein |
+| `motion.duration.base` | 200 ms | Panel öffnen, Aufklappen |
+| `motion.duration.slow` | 320 ms | Bottom Sheet, Seitenwechsel (selten) |
+| `motion.easing.standard` | `cubic-bezier(0.2, 0, 0, 1)` | Ein/Aus |
+| `motion.easing.exit` | `cubic-bezier(0.4, 0, 1, 1)` | Verlassen |
+
+**Reduced motion:** `prefers-reduced-motion: reduce` **und** eigener Schalter (S-04 *Bewegung*: System / reduziert / aus). Bei „reduziert“: alle Dauern → 0–80 ms, nur Überblendung statt Bewegung; **keine hochzählenden Zahlen**, kein Parallax, keine Konfetti-/Erfolgsanimation (auch sonst nicht vorgesehen). Nichts blinkt (WCAG 2.3.1). Auto-Weiter ist pausierbar (2.2.2). Layout-Verschiebungen beim Rechnen sind verboten (Skelett mit fester Höhe).
+
+### 4.7 Weitere Tokens
+
+| Bereich | Token |
+|---|---|
+| Icons | Lucide, 16/20/24 px, Strichstärke 1,75; Icon allein nur mit zugänglichem Namen; Status-Icons nie dekorativ |
+| z-index | `base 0 · sticky 10 · popover 20 · sheet/dialog 30 · toast 40` |
+| Layout-Rand | Seite 16 px (kompakt), 24 px (≥ 840), 32 px (≥ 1200) |
+| Zustandsebenen | Hover `+4 %` Überlagerung, Aktiv `+8 %`, Deaktiviert 38 % (nur für nicht-informative Elemente; Begründung als Text) |
+
+### 4.8 Komponenten-Katalog
+
+Je Komponente: **Zweck · Varianten · Zustände · A11y**. Jede Komponente hat Storybook-Story (alle Zustände, hell/dunkel, beide Dichten), Playwright-Komponententest, axe-Test und einen Eintrag in `packages/ui/README`. Gemeinsame Zustände aller interaktiven Komponenten: *Standard · Hover · Fokus (sichtbar) · Aktiv · Deaktiviert (mit Grund) · Laden (Skelett) · Fehler (Text + Icon)*. Nur Abweichungen stehen unten.
+
+| ID | Komponente | Zweck | Varianten | Besondere Zustände | A11y |
+|---|---|---|---|---|---|
+| **K-01** | **Geld/Prozent/Delta-Formatter** (`formatGeld`, `formatProzent`, `formatDelta`, `formatMonat`) | zentrale de-DE-Ausgabe (5.1), liefert `text` und `sprechtext` | Geld ganz/mit Cent/kompakt; Prozent 1 oder 2 Stellen; Prozentpunkte; Delta mit Vorzeichen; Zeitbezug | Bandbreite („290–350 €/Monat“); Wert fehlt („–“ mit Grund) | `sprechtext` ausgeschrieben („minus vier Komma zwei Prozent“, „1,5 Millionen Euro“), Minus U+2212, geschützte Leerzeichen; Unit-Tests je Format |
+| **K-03** | **KPI-Kachel** | Hauptkennzahl mit Kontext (Cockpit, Objekt) | groß / kompakt / mit Sparkline / mit Bullet Graph | kritisch/beobachten (Icon+Text), Wert wird gerechnet (Skelett), Bandbreite | als Button/Link mit vollem Namen („Netto-Cashflow 318 Euro pro Monat nach Steuern, 120 Euro mehr als im Vormonat“); Sparkline hat Textäquivalent; Container-Query-Umbruch ohne Abschneiden |
+| **K-04** | **Kennzahl mit Erklärung** (`<Kennzahl>`) | jede Zahl im UI; öffnet O-01 | inline / Wert+Label / in Tabellenzelle / Hero | Status-Flag B/Ä/G/D, Schätzungs-Marker, Spielwelt-Marker | `button`, Name enthält Wert+Einheit+Zeitbezug, `aria-haspopup="dialog"`, Enter/Leertaste öffnet, kein Nur-Hover |
+| **K-05** | **NumberField + Slider** | Eingabe von Beträgen, Zinsen, Laufzeiten (B6, keine Nur-Regler) | Euro / Prozent / Monate / Ganzzahl; mit/ohne Slider; Stepper | Basiswert-Marker + „Zurücksetzen“; außerhalb Bereich (Warnung, nie stilles Klemmen); gerechnet-Hinweis | `type="text"` + `inputmode="decimal"`, Parser akzeptiert „250000 / 250.000 / 250.000,50 / 250000,5“, Einheit als Suffix (im Label), Fehler inline mit Lösung (`aria-describedby`), Slider `role="slider"` mit `aria-valuetext` („3,6 Prozent“), Pfeiltasten ±Schritt, Bild±10×, nie fokusverlierend beim Rechnen (G3) |
+| **K-06** | **Status-Flag-Badge** | Herkunft: **BELEGT · ABGELEITET · GESCHÄTZT · DESIGN** | Kurz (Kürzel + Icon) / Lang (Text) | Prüfung fällig (zusätzliches Icon), Spielwelt | Text immer vorhanden (Kürzel hat `aria-label` „belegt, Quelle …“); Icons unterscheidbar bei Graustufen; Hit-Fläche öffnet O-01 Ebene 3 |
+| **K-07** | **Risiko-Indikator** | solide / beobachten / kritisch mit Begründung | Badge · Bullet Graph (Wert, Zielmarke, Bereiche) · Zeile | mit/ohne Begründung (Begründung in O-01) | Icon + Text, Bereichswerte als Text, `meter`-Semantik oder Textwert, Kontrast ≥ 3:1 der Bereiche |
+| **K-08** | **Fristen-Badge** | Frist in Spielmonaten, nie Echtzeit | „bis Feb. 2027“ / „in 3 Monaten“ / „überfällig seit Jan. 2027“ | überfällig (Icon), erledigt | Text vollständig („Frist: bis Februar 2027, in 3 Monaten“); keine Countdown-Animation; Farbe nur ergänzend |
+| **K-09** | **DataTable** (TanStack Table v9 + virtuelle Zeilen) | Listen mit 1–200 Zeilen, sortieren, filtern, gruppieren, Spalten wählen, Massenaktionen | Tabelle · Karten-Liste (K-29) auf kompakten Breiten | leer · 1 Zeile · 200 Zeilen · Filter ohne Treffer („Keine Treffer – Filter lockern: …“) · Mehrfachauswahl | `role="grid"`/`table` je Bedarf (Grid nur mit Zellnavigation), Pfeiltasten, `aria-sort`, Spaltenüberschriften `scope`, Zeilenzahl-Ansage („83 von 214“), Spaltenauswahl als Menü mit Checkboxen, Hinweis „weitere Spalten →“ bei Scroll (B13 Nr. 19), Zahlen rechtsbündig `tabular-nums`, Fokus bleibt bei Neusortierung |
+| **K-10** | **Filterleiste / Linsen** (+ **K-11** Linsen-Umschalter) | Filtern und Perspektivwechsel (Cashflow · Rendite · Lage · Risiko) | Chips + Popover (Desktop) · „Filter (3)“ → O-13 Bottom Sheet (mobil) | aktive Filter als entfernbare Chips; gespeicherte Ansicht; „Zurücksetzen“ | Linsen = Radiogruppe (Segmentierte Steuerung), Chips mit Entfernen-Knopf (Name „Filter Preis bis 200.000 € entfernen“), Trefferzahl als Statusmeldung, Filtern ändert Fokus nicht (Audit 5.2) |
+| **K-12** | **Annahmen-Leiste** | alle Eingaben der Kalkulation gruppiert | groß (Seitenleiste) · kompakt (Sheet) | Basiswert vs. geändert (Marker), Flag je Annahme, Szenario A/B/C | Gruppen als `fieldset`/Überschriften, Reihenfolge nach Wirkung, Live-Ergebnis in Region mit `aria-live="off"` + Ansage nur auf Wunsch (Taste), Reset je Annahme und gesamt |
+| **K-13** | **Diagramme:** Wasserfall · Zeitreihe · Tornado (+ Bullet Graph, Balken) | Herleitung, Verlauf, Sensitivität (ECharts 6, eigene Theme-Tokens) | Wasserfall Monat/Jahr, Objekt/Portfolio; Zeitreihe mit Prognose-Band; Tornado nach Wirkung sortiert | Rechnen (Skelett fester Höhe), keine Daten, Bandbreite, Punkt ausgewählt | **Titel + Textzusammenfassung** („Von 850 € Kaltmiete bleiben netto 112 €“) + **Tabellen-Umschalter** (immer vorhanden, Standard für Screenreader), direkte Beschriftung statt Legende, Muster/Marker, Tastaturnavigation durch Datenpunkte, Tooltip auch auf Fokus, Farbpalette ≥ 3:1, reduzierte Bewegung → keine Einblend-Animation |
+| **K-14** | **Fortschritts-Tracker** | mehrmonatige Prozesse (Kauf, Finanzierung, Sanierung, Zwangsversteigerung) | horizontal (Desktop) · vertikal (mobil) | Schritt: erledigt / aktuell / ausstehend / verzögert / gescheitert; Monatsangaben | geordnete Liste, `aria-current="step"`, Status als Text, „Was passiert hier?“ → O-01, Verzögerung mit Grund |
+| **K-15** | **Posteingang-Item** | eine Nachricht mit Entscheidung oder Info | Entscheidung · Info · gebündelt („3 Mieterhöhungen möglich“) · Krise | neu / gelesen / erledigt / verpasst (Text + Icon) | Liste mit `listitem`, Name „Entscheidung, Frist Feb. 2027, Anschlussfinanzierung, Gohlis ETW, ungelesen“, Wischaktionen nur als Abkürzung (sichtbare Knöpfe im Detail), `j/k` |
+| **K-16** | **Optionskarte** | Option im Entscheidungsdialog | normal · empfohlen („Standard“) · deaktiviert (mit Grund) | gewählt (Rahmen + Haken + Text) | Radiogruppe mit Beschriftung, Kosten/Effekt/Risiko als Definitionsliste, nie vorausgewählt außer „Standard“ |
+| **K-17** | **Vorher → Nachher** | Folgenvorschau | Tabelle 3–5 Zeilen · kompakt (Chips) | unsicher (Bandbreite), Wirkung ab Monat | echte Tabelle mit Spalten Vorher/Nachher/Δ; Δ mit Vorzeichen und Text („verschlechtert“); Wirkungsbeginn im Text |
+| **K-18** | **Leerzustand** | erklärt, was hier steht, und bietet nächsten Schritt | Erstnutzung · Filter ohne Treffer · Fehler · „noch nicht freigeschaltet“ | – | Überschrift + Satz + genau ein primärer Knopf; Illustration dekorativ (`alt=""`) |
+| **K-19** | **Bottom Sheet** | Erklärung, Filter, Details auf < 840 px | halbe Höhe · volle Höhe · Vollseite | gezogen, geschlossen; **nie gestapelt** | `role="dialog"`, Griff mit Knopf-Alternative (Ziehen immer ersetzbar, 2.5.7), Fokus hinein/zurück, Fokusfalle, Esc / System-Zurück schließt, Hintergrund inert, `scroll-padding` verhindert Verdeckung |
+| **K-20** | **Seitenpanel** | nicht-modale Erklär-Spalte / Mentor (840–1199 px) und angeheftet (≥ 1200 px) | angeheftet · überlagernd | angeheftet aktualisiert live | `complementary`/Region mit Überschrift, Fokus auf Überschrift beim Öffnen, Esc schließt (nicht bei angeheftet), verdeckt nie fokussierte Felder (2.4.11) |
+| **K-23/K-24** | **Toast / Banner** | Rückmeldung (3.5) | Toast mit Rückgängig · Banner Info/Warnung/Kritisch | Banner einklappbar | `role="status"` (höflich) / `role="alert"` nur Stufe 3 (3.6); Toast pausiert bei Fokus/Hover, ≥ 8 s |
+| **K-26** | **Mentor-Hinweis** | proaktiver Hinweis (3.10) | Karte im Inhalt | gesehen / „Später“ / „nicht mehr“ | Region, kein Fokusraub, drei Knöpfe, höchstens einer je Screen |
+
+**Querschnitts-Tests je Komponente:** (1) Tastatur komplett, (2) axe ohne Verstöße in Hell/Dunkel/Kontrast, (3) 320 px und 200 % Zoom, (4) Screenreader-Text prüfbar (`getByRole`-Name im Test), (5) reduzierte Bewegung, (6) beide Dichten, (7) Zustandsmatrix im Storybook (visuelle Regression, 7.2).
+
+---
+
+## 5. Zahlen-, Datums- und Sprachstil
+
+### 5.1 Zahlen und Datum (de-DE, zentral über K-01)
+
+Alle Ausgaben laufen über `Intl.NumberFormat('de-DE')` bzw. `Intl.DateTimeFormat('de-DE')`; **keine** Formatierung in Komponenten oder im Rechenkern. Rechenkern liefert Cents (Ganzzahl) und Raten, die UI rundet nur zur Anzeige (Rundung ändert nie den Rechenwert).
+
+| Fall | Ausgabe | Regel |
+|---|---|---|
+| Betrag | `1.234.567,89 €` | Punkt Tausender, Komma Dezimal, geschütztes Leerzeichen vor `€` |
+| Betrag Tabelle/KPI | `245.000 €` | ganze Euro; Cent nur, wo relevant (Miete, Hausgeld, Rate; Schalter „Cent in Tabellen“ in S-04) |
+| Kompakt (Achsen, Karten) | `1,5 Mio. €` | nur bei Platzmangel; Screenreader-Text ausgeschrieben („1,5 Millionen Euro“) |
+| Prozent | `3,8 %` | geschütztes Leerzeichen vor `%`; Rendite 1 Stelle, Zinssatz 2 Stellen |
+| Prozentpunkte | `+0,50 Pp.` / „0,5 Prozentpunkte“ | nie „%“ für Differenzen von Prozentsätzen; Glossar-Eintrag |
+| Vorzeichen/Delta | `+120 €`, `−4,2 %` | **immer mit Vorzeichen** (U+2212 Minus, `+` ausdrücklich); Null als `±0 €`; Pfeil neutral, Bewertung getrennt (4.1 Regel 2) |
+| Zeitbezug | `318 €/Monat`, `3.816 €/Jahr` | **immer** angeben; „vor/nach Steuern“ angeben, wo ein Steuereffekt enthalten sein kann; nie mischen ohne Umschalter |
+| Fläche, Prozent-Kennzahlen | `52 m²`, `22,8-fache Jahresmiete` | Einheit festes Suffix |
+| Bandbreite | `290–350 €/Monat` (Halbgeviertstrich) | ab geschätzten Werten; Mittelwert nie ohne Spanne als „Prognose“ |
+| Fehlend | `–` plus Grund im Tooltip/Text („noch nicht bekannt“) | nie `0` oder `NaN` |
+
+**Monat vs. Jahr:** Spielzeit hat **Monat als kleinste Einheit** (kein Tag). Anzeige `Nov. 2026` (kurz), `November 2026` (lang), `2026-11` nur in URLs/Dateinamen. Fristen in Monaten („bis Feb. 2027“, „in 3 Monaten“). Zeitreihen Monat/Jahr per Umschalter, Standard je Kennzahl: Cashflow, Miete, Rate **monatlich**; Steuer, Vermögen, Rendite **jährlich**. Ein Screen mischt Zeitbezüge nur mit sichtbarem Etikett.
+
+**Rundung je Kontext**
+
+| Kontext | Rundung |
+|---|---|
+| Kontoauszug, Rate, Miete, Hausgeld | Cent |
+| KPI, Tabellen Objekte, Kaufpreis | ganze Euro |
+| Prognosen, Marktwerte, Verkaufserlös | auf 100 € bzw. als Bandbreite („~38–52 Tsd. €“) |
+| Renditen | 1 Nachkommastelle; keine Scheingenauigkeit bei geschätzten Eingaben |
+| Zinssätze | 2 Nachkommastellen |
+| Herleitungs-Summen (O-01) | Summe der **gerundeten** Posten wird angezeigt; Abweichung ≤ 1 Cent/Euro durch Rundungsposten erklärt (AK-O01-2) |
+
+**Eingabe:** Parser akzeptiert „250000“, „250.000“, „250.000,50“, „250000,5“ (letztes `,` oder `.` mit ≤ 2 Folgeziffern = Dezimaltrenner), formatiert beim Verlassen, Fehler nennt Lösung („Bitte einen Betrag wie 250.000 eingeben.“). Negative Beträge nur wo fachlich sinnvoll.
+
+### 5.2 Sprache und UX-Writing
+
+| Regel | Umsetzung |
+|---|---|
+| **du-Form**, sachlich, freundlich, kein Jargon-Ballast | „Dir bleiben 38 € im Monat.“ Mentor und UI duzen. **Spielwelt-Figuren (Bank, Notar, Verwaltung, Mieter) siezen** und sprechen in ihrer Rolle, mit Interessenhinweis. |
+| Aktiv, konkret, mit Zahl | „Die Bank lehnt ab, weil die Rate 44 % deines Nettoeinkommens beträgt (Grenze 40 %).“ |
+| **Knopftexte nennen Handlung und Objekt/Betrag** | „Sondertilgung 5.000 € buchen“, nie „OK“, „Ja“, „Bestätigen“, „Weiter“ (Ausnahme Zeitleiste) |
+| Fehler nennen Ursache und Lösung | „Der Betrag liegt über deiner Reserve. Senke ihn auf höchstens 12.400 € oder entscheide dich für Nachschuss.“ |
+| **Keine Anlageberatung** | „Unter diesen Annahmen …“, „Das Modell zeigt …“; nie „Du solltest kaufen/eine GmbH gründen“; Mentor stellt Fragen statt Empfehlungen |
+| Keine Schuldzuweisung | Fehler beschreiben Ursache, nicht Person: „Die Reserve hat nicht gereicht“ statt „Du hast zu wenig Reserve geplant“ |
+| Kein Druck | keine Ausrufezeichen-Ketten, kein „Nur noch!“, keine Countdown-Sprache, keine Streaks |
+| Barrierearm | Satzlänge ≤ 20 Wörter in Ebene 1, aktive Verben, Abkürzungen beim ersten Auftreten ausgeschrieben (AfA = Absetzung für Abnutzung) |
+| Konsistente Begriffe | Ein Wort je Konzept (Glossar S-34 ist Quelle): Kaltmiete (nicht Nettomiete), Reichweite (nicht Runway), Beleihung (nicht LTV im Fließtext, LTV im Glossar als Synonym) |
+| Status-Wörter | belegt · abgeleitet · geschätzt · Vereinfachung (Flag DESIGN) |
+| Inklusiv, ohne Gendersonderzeichen | neutrale Formulierungen („Mietende“ sparsam; Rollen wie „Mieter-Bewerbung“); Entscheidung dokumentiert im Glossar der Schreibregeln |
+| Texte als Schlüssel | Paraglide/Inlang-Nachrichten, Plurale, Platzhalter für Formatter (K-01); kein String im Rechenkern |
+
+**Beispiele**
+
+| Schlecht | Besser |
+|---|---|
+| „Bestätigen?“ [Ja] [Nein] | „Kaufvertrag über 189.000 € beurkunden?“ [Zurück zur Bearbeitung] [Kaufvertrag über 189.000 € beurkunden] |
+| „Der CF ist negativ.“ | „Dir bleiben nach Kosten, Rate und Steuer −83 € im Monat.“ |
+| „Du solltest die GmbH nutzen.“ | „Unter diesen Annahmen liegt die Steuer in der GmbH 3.400 € niedriger. Lass das von einer Steuerberatung prüfen.“ |
+| „Fehler 422“ | „Dieser Betrag passt nicht: Gib einen Betrag wie 250.000 ein.“ |
+
+### 5.3 Glossar-Verlinkung
+
+- Fachbegriffe im Fließtext erhalten eine **gepunktete Unterstreichung**; Klick/Tap/Enter öffnet O-02 (Popover mit 1–2 Sätzen, „Mehr im Glossar“ → S-34). Kein Hover-only; Esc schließt, Fokus zurück (WCAG 1.4.13).
+- **Häufigkeit:** je Ansicht nur beim ersten Auftreten (Lern/Standard); Profi nur in Erklär-Karten (0.5). Nie in Überschriften, Knöpfen, Tabellenköpfen (dort stattdessen Info-Symbol in Spaltenmenü).
+- Jeder Glossar-Eintrag: Kurzdefinition (≤ 25 Wörter), Beispiel mit Zahl, Rechtsgrundlage (falls zutreffend), Verweis auf Mikro-Lektion, Stand/Prüfdatum, Vereinfachung im Spiel.
+- Build-Test: jeder in `content` verwendete Fachbegriff-Schlüssel existiert im Glossar (AK „alle Begriffe verlinkt“, Roadmap 6.4).
+
+### 5.4 Disclaimer-Konzept (Spiel ≠ Steuer-/Rechtsberatung; Fachspezifikation 11, 6.3)
+
+| Ort | Inhalt | Häufigkeit | Form |
+|---|---|---|---|
+| **Start-Disclaimer** (S-02 vor Schritt 1) | „Dieses Spiel ist ein Trainingswerkzeug. Es vereinfacht Steuern und Recht bewusst und verwendet teils veraltete oder ungeprüfte Werte. Es ersetzt keine Steuer- oder Rechtsberatung. Triff reale Entscheidungen nur nach fachlicher Prüfung.“ | **einmal** je Gerät/Spielstand-Neuanlage, danach in S-04 *Hilfe* und S-41 abrufbar | ruhige Karte, Knopf „Verstanden, los geht’s“, kein Pflichthäkchen |
+| **Status-Flag je Zahl** (K-06) | Stand, Quelle, Prüfintervall („Prüfung fällig“) | überall, immer | Badge + O-01 Ebene 3 |
+| **Vereinfachungs-Marker** | „Vereinfachung im Spiel: ohne Soli und Kirchensteuer.“ | an jeder betroffenen Zahl und in O-01 Ebene 3 | Flag DESIGN, ein Satz je Vereinfachung |
+| **Rechtsstand** | „Rechtsstand der Spieldaten: 30.09.2026“; bei Spielzeit danach „Spielwelt – reale Rechtslage kann abweichen“ | Profilmenü, S-41, Zeitleisten-Label „Spielwelt“ | Text, nicht wegklickbar |
+| **Steuer-/Rechtsdialoge** (S-30, S-22, Strukturvergleiche) | Kurzhinweis „Vergleich unter diesen Annahmen, keine Steuerberatung.“ | an Dialog-Fuß, **einmal je Dialog** (nicht je Zahl) | Fußzeile, ≤ 1 Zeile |
+| **Kein Empfehlungsurteil** | Strukturvergleiche enden mit „Lass das von einer Steuerberatung prüfen.“ | immer | Text im Ergebnisblock |
+| **Fiktive Ereignisse** | Label „fiktiv“ an Szenario-Ereignissen; nie mit realen historischen Daten vermischt | jedes Ereignis | Badge |
+| **Quellenkritik** | Hinweis auf kommerzielle Interessen von Quellen als Lerninhalt | S-41, Lektion | Text |
+| **Jahresbericht/Export** | Fußzeile „Trainingswerkzeug, keine Beratung. Rechtsstand …“ | jeder Export | Text im PDF/Bild |
+| **Store/Landing (P8/P9)** | gleicher Kerntext, Impressum/Datenschutz (rechtlich geprüft durch den Auftraggeber) | – | – |
+
+**Grundsätze:** Disclaimer informieren, sie blockieren nicht und nerven nicht (kein Modal bei jedem Start, keine Wiederholung je Zahl). Keine Eingabe echter Steuerdaten (Steuer-ID, Einkommensteuerbescheid) – Profile arbeiten mit Archetypen; „Mein echtes Profil“ nimmt nur grobe Angaben auf. AK: AK-DSC-1 Start-Disclaimer vor erster Entscheidung, AK-DSC-2 jede steuerliche/rechtliche Zahl trägt Stand und Quelle, AK-DSC-3 Rechtsstand ist von jedem Screen in ≤ 2 Interaktionen sichtbar.
+
+---
+
+## 6. Barrierefreiheit (WCAG 2.2 AA)
+
+**Ziel:** WCAG 2.2 AA plus Game-Accessibility-Basics; Prüfstand P8 (Audit), laufend ab P0. Die Checkliste ist eine **Definition-of-Done-Zeile je Komponente** (Spalte „WCAG“); Screen-DoD in 7.1 verweist darauf.
+
+### 6.1 Checkliste je Komponente
+
+| Komponente | Konkrete Prüfpunkte | WCAG |
+|---|---|---|
+| **App-Shell / Navigation** | Landmarks (`banner`, `nav`, `main`, `complementary`), „Zum Inhalt springen“ als erstes Fokusziel, aktive Seite `aria-current="page"`, Reihenfolge der Navigation identisch auf allen Breiten, Fokus verdeckt nie von Zeitleiste/Tab-Leiste (`scroll-padding`), Hilfe-Knopf an gleicher Stelle | 1.3.1, 2.4.1, 2.4.11, 3.2.3, 3.2.6 |
+| **Zeitleiste (K-02)** | Hauptknopf Name enthält Zustand („Weiter, 1 Monat“ / „2 Entscheidungen offen“); Fortschritt der Simulation als höfliche Statusmeldung, entprellt; „Anhalten“ erreichbar; Auto-Weiter pausierbar; Ziel ≥ 44 px | 2.2.2, 4.1.3, 2.5.8 |
+| **Kennzahl (K-04) / KPI (K-03)** | Name als ganzer Satz mit Wert, Einheit, Zeitbezug, Delta; Vorzeichen und Einheit werden vorgelesen (NVDA/JAWS/VoiceOver/TalkBack Stichprobe); kein Nur-Hover; Status-Flag mit Text | 1.1.1, 1.4.1, 4.1.2 |
+| **Erklär-Karte (O-01)** | Dialog/Popover nach APG, Fokus hinein und zurück, Esc, Pfad (Breadcrumb) als `nav`, überfahrbar/beständig, nie gestapelt; Herleitung als Tabelle | 1.4.13, 2.1.2, 2.4.3, 3.2.1 |
+| **Dialoge/Sheets (O-04, O-05, K-19)** | `role="dialog"`/`aria-modal`, beschriftet, Fokusfalle, Hintergrund inert, Esc, Fokus zurück; Optionen als Radiogruppe; Standardfokus im Prüfschritt auf „Zurück“; Ziehen mit Alternative | 2.1.1, 2.4.3, 2.5.7, 3.3.4 |
+| **Formulare (K-05, K-12)** | sichtbare Labels (kein Platzhalter als Label), `aria-describedby` für Hilfe/Fehler, Fehlermeldung nennt Lösung, Autocomplete wo sinnvoll, Eingaben werden wiederverwendet, Slider mit Alternative zum Ziehen, Zahlen als Text mit `inputmode` | 3.3.1, 3.3.2, 3.3.3, 3.3.7, 1.3.5, 2.5.7 |
+| **DataTable (K-09)** | echte Tabelle oder Grid-Semantik mit Zellnavigation; `aria-sort`; Spaltenköpfe zugeordnet; Zeilenzahl-Ansage; Spaltenauswahl per Tastatur; Hinweis auf weitere Spalten; Reflow bei 320 px als Karten-Liste oder in sich scrollender Bereich mit Hinweis | 1.3.1, 1.4.10, 2.1.1, 4.1.2 |
+| **Diagramme (K-13)** | Titel, Textzusammenfassung, **Datentabelle** (Umschalter), direkte Beschriftung, Muster/Marker, Farb-Kontrast ≥ 3:1, Datenpunkte per Tastatur, keine Info nur im Tooltip | 1.1.1, 1.4.1, 1.4.11 |
+| **Filter/Linsen (K-10/11)** | Linsen als Radiogruppe, Chips mit benannten Entfernen-Knöpfen, Trefferzahl als Statusmeldung, Filtern lässt Fokus unverändert | 3.2.2, 4.1.3 |
+| **Posteingang (K-15) / Listen** | Liste mit Semantik, Status als Text, Badge-Zahl im zugänglichen Namen, Wischaktionen mit sichtbaren Knöpfen, `j/k` abschaltbar | 2.1.4, 2.5.1 |
+| **Toast/Banner (K-23/24)** | `role="status"` bzw. `alert` nur Stufe 3; Toast ≥ 8 s, pausiert bei Fokus; Banner einklappbar; keine Live-Region-Fluten (nur kleine Container, entprellt) | 2.2.1, 4.1.3 |
+| **Status-Flag, Risiko, Frist (K-06/07/08)** | Icon + Text, Form unterscheidbar in Graustufen, Kontrast ≥ 3:1, Fristtext ausgeschrieben | 1.4.1, 1.4.11 |
+| **Tracker (K-14)** | geordnete Liste, `aria-current="step"`, Status in Text | 1.3.1 |
+| **Befehlspalette (O-06)** | Combobox/Listbox nach APG, `aria-activedescendant`, Trefferansage, Esc | 2.1.1, 4.1.2 |
+| **Mentor/Coachmark (O-03/O-12)** | kein Fokusraub, schließbar, nicht blockierend, ruhig angekündigt, nicht über Eingabefeldern | 2.4.11, 3.2.6 |
+| **Karte (S-11 Karte)** | Liste als gleichwertiger Zugang; Karte nicht zwingend; Fokus-Reihenfolge; Farbskala ≥ 3:1 mit Muster | 1.1.1, 2.1.1 |
+| **Farbe & Theme** | beide Themen + Kontrast-Thema geprüft; Status nie nur Farbe | 1.4.1, 1.4.3, 1.4.11 |
+| **Bewegung** | `prefers-reduced-motion` + Schalter, keine Zahlenzähler, nichts blinkt, keine Zeitlimits | 2.2.1, 2.3.1, 2.3.3 |
+| **Reflow/Zoom** | 320 px ohne horizontales Scrollen der Seite, 200 % Text, Textabstände | 1.4.4, 1.4.10, 1.4.12 |
+| **Sprache** | `lang="de"`, Fremdwörter/Eigennamen mit `lang` falls nötig, Titel je Route, Überschriftenhierarchie | 3.1.1, 2.4.2, 1.3.1 |
+| **Spielspezifisch** | Autosave nach jedem Monat, Hilfestufen, getrennte Marktschwierigkeit, Schriftgröße 90–150 %, kein Ton als alleinige Information, Ton getrennt regelbar | – |
+
+**Mobil/Touch:** Zielgröße ≥ 24 px (Minimum), Haupt-Touchaktionen **44 px**; kein Ziehen/Wischen ohne Alternative; Orientierung nicht gesperrt (1.3.4); Tastatur öffnen blendet Leisten aus, damit Fokus sichtbar bleibt.
+
+### 6.2 Werkzeuge und Prozess
+
+| Ebene | Werkzeug | Wann | Gate |
+|---|---|---|---|
+| **Statisch** | `eslint-plugin-jsx-a11y` (oder Biome-Äquivalente), Token-Kontrastskript (`tokens:kontrast`) | jeder Commit/CI | 0 Fehler |
+| **Automatisiert** | **axe-core in Playwright** (`@axe-core/playwright`) auf jeder Route × {hell, dunkel, kontrast} × {Desktop, Handy}, in Storybook je Komponente | CI je PR | 0 kritische/ernste Verstöße; Ausnahmen mit Begründung in `a11y-baseline.json` (Review nötig) |
+| **Tastatur-E2E** | Playwright-Spec je Top Task (T1–T10): Ziel nur mit Tastatur erreichen, Fokusreihenfolge, Fokus zurück nach Dialog, keine Fokusfalle, Fokus nie verdeckt (Prüfung `element.boundingBox` vs. Leisten) | CI je PR (Kern-Flows), nightly (alle) | bestanden |
+| **Reflow/Zoom** | Playwright mit 320 px Viewport, 200 % Text, Prüfung auf `scrollWidth ≤ clientWidth` | CI | bestanden |
+| **Reduzierte Bewegung** | Playwright `reducedMotion: 'reduce'`: keine Animation > 80 ms, keine Zähler | CI | bestanden |
+| **Screenreader-Stichproben** | NVDA + Firefox/Chrome (Windows), VoiceOver + Safari (macOS/iOS), TalkBack (Android ab P9); je Release 8 Stichproben (Cockpit, Posteingang-Entscheidung, Erklär-Karte, Tabelle sortieren, Kalkulator-Eingabe, Wasserfall + Tabelle, Prüfschritt, Krisen-Banner) | P3 erste Runde, P6, **P8 Audit**, P9 | Protokoll in `docs/qa/a11y/` |
+| **Manuell** | Zoom 400 %, Windows Kontrast, Textabstände-Bookmarklet, Farbenblindheits-Simulation, Tab-Durchlauf je Screen | je Screen-DoD | Checkliste 6.1 |
+| **Nutzer** | Usability-Test mit mindestens 1 Person mit Screenreader/Sehschwäche/motorischer Einschränkung in Test 3 (P8) | P8 | Top-Befunde behoben |
+| **Plugin-Review** | Design-Plugin `accessibility-review` (7.5) | je Screen vor „fertig“ | keine offenen kritischen Befunde |
+
+**Regel:** Ein neuer Verstoß blockiert den Merge, nicht die nächste Phase. Baseline darf nur sinken.
+
+---
+
+## 7. UX-Qualitätssicherung
+
+### 7.1 Definition of Done je Screen (alle MÜSSEN erfüllt sein)
+
+| # | Kriterium | Prüfung |
+|---|---|---|
+| 1 | Alle Raster-Punkte aus 2.0 beschrieben und umgesetzt (Inhalte, Aktionen, Zustände, Layouts D/T/M, Tastatur, Microcopy, AK) | Review gegen Spezifikation |
+| 2 | **Alle vier Fensterklassen** spielbar (≥ 1200, 840–1199, 600–839, < 600), 320 px ohne Seiten-Scrollbalken | Playwright-Viewports |
+| 3 | Jede Zahl ist `Kennzahl` (K-04) mit Erklär-Karte; Status-Flag und Zeitbezug vorhanden | Registry-Test (AK-O01-1) |
+| 4 | Zustände: leer, Rechnen (Skelett), Fehler (Inline-Banner mit Lösung), Lernmodus vs. Profi, Spielwelt-Kennzeichnung | Storybook/E2E |
+| 5 | Teure Aktionen über O-05, billige mit Undo (O-07), Vormerken über O-14; Knopftexte konkret | Stichprobe + Regel „kein OK/Ja“ (Lint auf Text-Schlüssel) |
+| 6 | **A11y:** axe 0 kritisch/ernst (hell/dunkel/kontrast), Tastatur-E2E, Fokus nie verdeckt, Live-Regionen nicht überladen | CI |
+| 7 | Visuelle Regression: Screenshots je Fensterklasse × Thema × Dichte freigegeben | 7.2 |
+| 8 | Performance: Interaktion < 100 ms spürbar, Berechnung im Worker, kein Layoutsprung (CLS < 0,05), Eingaben behalten Fokus beim Rechnen (G3) | Playwright-Test (Tippen während Neuberechnung) |
+| 9 | Text: Schlüssel in Paraglide, du-Form, keine Anlageberatung, Glossar-Links, Disclaimer wo nötig (5.4) | Plugin `ux-copy` |
+| 10 | Audit-5-Regression-Test: die jeweilige Fehlerklasse (Fokusverlust, Re-Render bei Tick, abgeschnittene Tabs, HUD-Umbruch, Kontrast) ist abgedeckt | Testliste |
+| 11 | Design-Review (Plugin `design-critique`) ohne offenen kritischen Punkt | 7.5 |
+| 12 | Usability-Aufgabe des Screens (7.3) mit Zielwert erfüllt, soweit in dieser Phase getestet | Test-Report |
+
+### 7.2 Visuelle Regression
+
+- **Werkzeug:** Playwright-Screenshots (`toHaveScreenshot`) auf Storybook-Stories (Komponenten) und auf Kern-Routen mit festem Seed/Datum (Spielstand-Fixture „Gohlis-Standard“). Schriften geladen, Animationen aus, Uhr eingefroren, Zufall per Seed.
+- **Matrix:** Komponenten: Zustand × {hell, dunkel} × {komfortabel, kompakt}. Screens: {Desktop 1440, Tablet 1024, Tablet hoch 768, Handy 390} × {hell, dunkel}; Kontrast-Thema nur Komponenten.
+- **Schwellen:** Pixeldifferenz-Schwelle 0,1 %; Änderungen nur per bewusster Aktualisierung mit Review im PR (Bildvergleich im PR-Kommentar). Schrift-Rendering fix auf CI-Container.
+- **Zusätzlich:** Zahlenformat-Goldens (K-01 gegen Tabelle 5.1), Overflow-Test (kein abgeschnittener Text bei 200 % und langen Namen), Layout-Metriken (Höhe App-Leiste + Zeitleiste ≤ 104 px mobil).
+- **Ablage:** Baselines im Repo (Git LFS oder separates Artefakt), Review-Rolle `ux-reviewer`.
+
+### 7.3 Usability-Testplan
+
+**Rahmen:** je Test 5 Personen (Test 1: Auftraggeber + 1–2 Personen; Test 2: Einsteiger; Test 3: gemischt inkl. Barrierefreiheit), Think-Aloud, Remote oder vor Ort, Aufzeichnung mit Einwilligung, keine echten Daten; Moderationsleitfaden in `docs/qa/usability/`.
+
+| Test | Phase | Fokus | Aufgaben (Auszug) |
+|---|---|---|---|
+| **1** | P3 | Vertical Slice | A1–A5 unten |
+| **2** | P6 | Onboarding Neulinge | A6–A8, Zeit bis zur ersten Kaufentscheidung |
+| **3** | P8 | gesamt inkl. A11y | A9–A12, Screenreader/Tastatur-Variante der Kernaufgaben |
+
+| ID | Aufgabe (Wortlaut an Testperson) | Top Task | Erfolgskriterium | Zielwert |
+|---|---|---|---|---|
+| A1 | „Finde heraus, wie es dir finanziell geht und was dringend ist.“ | T1 | nennt Liquidität/Reichweite und offene Entscheidung | ≥ 90 % Erfolg, < 30 s |
+| A2 | „Triff die offene Entscheidung im Posteingang.“ | T2 | wählt Option, erkennt Standardfolge und Frist | ≥ 90 %, keine Fehlklicks auf „OK“ |
+| A3 | „Finde ein Objekt mit positivem Cashflow nach Steuern und prüfe es.“ | T3 | Linse/Filter genutzt, Kalkulator geöffnet | ≥ 80 %, < 3 min |
+| A4 | **„Finde heraus, warum die Bank abgelehnt hat.“** | T4 | benennt die Kennzahl/den Code (z. B. Rate/Nettoeinkommen) **und** eine Gegenmaßnahme | **≥ 80 % Erfolg in < 60 s** (AK-S17-3) |
+| A5 | „Was ist die Zahl ‚Netto-Cashflow‘ und woraus besteht sie?“ | T1/L1 | öffnet Erklär-Karte, benennt ≥ 2 Posten | ≥ 85 %, < 20 s |
+| A6 | „Starte ein neues Spiel und triff deine erste Entscheidung.“ | Onboarding | ≤ 2 min, keine Hilfe nötig | Median ≤ 2 min |
+| A7 | „Prüfe Angebot 2 selbst und sag, ob du es kaufen würdest (und warum).“ | T3 | nutzt Bierdeckel + Cashflow, nennt Risiko | ≥ 75 % korrekte Einschätzung |
+| A8 | „Mach den Kaufvertrag fertig.“ | T5 | liest Prüfschritt, nutzt „Zurück zur Bearbeitung“ oder Beurkunden bewusst | 0 versehentliche Beurkundungen |
+| A9 | „Erhöhe die Miete in Einheit 2, so weit es erlaubt ist.“ | T6 | erkennt Frist/Kappungsgrenze, plant Versand | ≥ 70 %, Verständnis der Grenze |
+| A10 | „Deine Liquidität wird knapp. Was tust du?“ | T7 | findet Frühwarnung und wählt Option mit Folgenvorschau | ≥ 80 %, kein Missverständnis „Game Over“ |
+| A11 | „Entscheide über die Anschlussfinanzierung.“ | T8 | vergleicht Angebote, nennt Wirkung auf Liquidität | ≥ 80 % |
+| A12 | „Sieh dir dein Jahr an und nenne, was du anders machst.“ | T9 | schließt Debrief, setzt Vorsatz | ≥ 75 %, Debrief nicht übersprungen aus Frust |
+
+**Messen je Aufgabe:** Erfolg (ja/teilweise/nein), Zeit, Fehlklicks, Hilfegebrauch, Verständnis (kurze Rückfrage), SEQ (1–7), Zufriedenheit am Ende (SUS-Kurzform). Befunde werden in **Schweregrade** (kritisch/schwer/mittel/leicht) eingestuft und als Issues mit Screen-ID geführt; kritische/schwere Befunde sind **Gate** für die Phase.
+
+### 7.4 Metriken
+
+| Metrik | Quelle | Zielwert | Zeitpunkt |
+|---|---|---|---|
+| Aufgabenerfolg Kernaufgaben | Usability-Tests | ≥ 80 % je Aufgabe (7.3) | Test 1/2/3 |
+| Zeit bis erste Entscheidung | Test + lokale Telemetrie (nur Opt-in) | ≤ 2 min | P6 |
+| Zeit bis erste Kaufentscheidung | Test | ≤ 20 min im Lernmodus | P6 |
+| SUS | Test | ≥ 75 | Test 3 |
+| Anteil Kennzahlen mit Erklär-Karte | Registry-Test | 100 % | CI |
+| A11y-Verstöße (kritisch/ernst) | axe | 0 | CI |
+| Fokusverlust bei Neuberechnung | Playwright | 0 | CI |
+| Layoutverschiebung (CLS) | Lighthouse/Playwright | < 0,05 | CI |
+| INP / Interaktionsdauer | Messung | < 200 ms (Zielwert 100 ms) | Release |
+| Abbruchquote Onboarding | lokale Telemetrie (Opt-in), anonym | < 15 % | P6–P8 |
+| Debrief-Abschlussquote (nicht übersprungen) | Telemetrie/Test | beobachten (kein Zielwert, kein Druck) | P6 |
+| Anteil Spielzeit mit offenen Fristen im Verzug | Spielstatistik | nur Auswertung | P8 |
+
+**Telemetrie:** standardmäßig **aus**; Opt-in, nur anonymisierte Ereigniszähler, nie Spielstandinhalt; vollständig lokal exportierbar. Keine Metrik darf zu Manipulationsmustern führen (B11/B13 Nr. 15).
+
+### 7.5 Review-Rituale mit Plugins
+
+| Ritual | Wann | Plugin/Werkzeug | Ergebnis |
+|---|---|---|---|
+| **Design-Erstellung** | beim Bau jedes Screens/jeder Komponente | `frontend-design` (Plugin): Umsetzung gegen Tokens/Komponenten-Katalog, keine generischen Layouts | Umsetzung ohne Eigenfarben, Stories vollständig |
+| **Design-Critique** | je Screen vor „fertig“; je Phase gebündelt | Design-Plugin `design-critique` mit Screenshots (D/T/M, hell/dunkel) | Befundliste nach Hierarchie, Konsistenz, Dichte; Maßnahmen im PR |
+| **Accessibility-Review** | je Screen vor „fertig“; vor jedem Release | Design-Plugin `accessibility-review` + axe-Berichte (6.2) | WCAG-2.2-Befunde mit Schweregrad; kritische blockieren |
+| **UX-Copy-Review** | je Screen/Dialog, besonders Entscheidungen, Fehler, Mentor-Texte | Design-Plugin `ux-copy` gegen Regeln 5.2 | du-Form, Knopftexte, keine Beratung, Glossar-Links |
+| **Fach-Review der Texte** | Mentor-/Lektionstexte, Rechts-/Steuerhinweise | Agent `fach-pruefer` + Auftraggeber | geprüft/Datum im Content-Paket |
+| **Code-Review UI** | je PR | `code-review`-Plugin + dependency-cruiser (nur `ui` → keine Rechenkernlogik) | Regeln: Tokens statt Hex, K-01 statt eigener Formatierung |
+| **Wöchentlicher Walk-through** | je Sitzung/Woche | Playwright-Trace + Screenshot-Reihe der Top Tasks T1–T10 | „Tastatur-Durchlauf“ und „Mobil-Durchlauf“ je ein Top Task |
+| **Phasen-Review** | Phasenende | Gesamtkontrolle gegen DoD 7.1, Audit-5-Regressionsliste, Anti-Pattern-Liste (B13) | Freigabe oder Nacharbeit |
+| **Retrospektive** | nach Usability-Test | Befunde → Backlog, Regel-Updates in dieses Dokument | Änderungsprotokoll |
+
+---
+
+## 8. Reihenfolge der UI-Umsetzung je Phase (P0–P9)
+
+Prinzip: **Design-System und Shell zuerst, Kern-Screens als vertikaler Schnitt (P3), dann Tiefe, dann Politur.** Jede Phase liefert nur Screens, die den DoD (7.1) erfüllen; unfertige Funktionen erscheinen nicht (L8: Navigation von Anfang an vollständig, Platzhalter „kommt in Phase …“ nur mit Leerzustand K-18).
+
+| Phase | UI-Lieferung | Komponenten/Overlays | Prüfung |
+|---|---|---|---|
+| **P0 Fundament** | App-Shell (Router, Sidebar/Rail/Tab-Leiste, Zeitleiste als leere Hülle), **Design-Tokens hell/dunkel/Kontrast**, Schriften, PWA-Manifest, Storybook, Playwright + axe-Grundgerüst, `tokens:kontrast`-Skript, Leerzustände aller Bereiche (S-06 bis S-37 als Platzhalterrouten) | Tokens, K-02 (Hülle), K-18, K-19, K-20, K-23/24 (Grundform) | axe 0 auf Shell, Viewport-Matrix, Offline-Installation |
+| **P1 Rechenkern** | **Datenvertrag `Kennzahl`**, Formatter K-01, Registry der Schlüssel, Formatierungs-Goldens; Entwickler-Ansicht „Kennzahl-Galerie“ (intern) | K-01, K-04 (Entwurf), K-06 | Goldens de-DE, Summentests Herleitung |
+| **P2 Daten & Regionen** | S-38 Regionen-Profil, S-41 Quellen & Lizenzen, Karte Länder/Kreise (S-11 Karte-Grundlage), Status-Flags in realen Daten | K-06, K-13 (Karte/Balken), K-09 Grundform | Quellen/Stand überall sichtbar, Karte mit Listen-Alternative |
+| **P3 Vertical Slice** | S-01–S-04 (basic), **S-02 Startassistent + Onboarding K1**, S-06 Cockpit, S-07 Monatsbericht, S-08/S-09 Posteingang, S-11 Liste+Kreis-Karte, S-13 Exposé, S-14 Bierdeckel+Vollkalkulation (ohne Steuer), S-16, S-17, S-18 Einzelgebot, S-19, S-20/21/23 (Basis), S-27 Kontostand, S-28 Übersicht, S-34 Glossar (Grundbestand), S-37 Ziel; **O-01, O-02, O-04, O-05, O-07, O-10, O-11, O-12 (leicht), O-13, O-14**, O-03 Grundgerüst, O-06 Grundfunktion, Krisen-Banner (Skript) | K-01–K-20, K-23/24, K-28/29 | Screen-DoD für alle; axe, Tastatur-E2E T1–T5, visuelle Regression, **Usability-Test 1** |
+| **P4 Bewirtschaftung & Steuern** | S-10 Chronik, S-21 vollständig, S-22 + Mieterhöhungs-Assistent, S-23 vollständig, S-24, S-25, S-30 Steuern, S-31 Jahresbericht, S-36 Tagebuch, S-39, S-40 Kalender, **O-09 Jahresabschluss (3.7), Debrief v1**, Zeitbudget/Delegation | K-14 (komplexe Prozesse), K-17 | T6, T9, NK-/WEG-Abrechnung E2E, Screen-DoD |
+| **P5 Skalierung & Finanzen** | S-12, S-15, S-18 Gebotsrunden, S-20 vollständig (Linsen, Gruppen), S-26 Verkauf, S-27 Prognose + Wasserfall Portfolio, S-28 Anschluss/Sondertilgung, S-29 Bank, S-32 Szenario-Labor, **S-43 + O-08 Krisen-Flow (3.6)** | K-10/11 gespeicherte Ansichten, K-13 Tornado/Szenarien, K-12 vollständig | T7, T8, T10, Krisen-Eskalationstests, Tabellen mit 200 Zeilen |
+| **P6 Lernen & Szenarien** | S-33 Lernpfad/Challenges, S-34 vollständig, S-35 Mikro-Lektionen, S-36 Debrief-Archiv, S-37 vollständig, S-42 Kauf-Review, S-03 Checkpoints, **Mentor v1 (3.10)**, **Modell-Progression (3.11)**, Schattenrechnung | K-26, O-03 voll, Auszeichnungen (sparsam) | **Usability-Test 2** (Onboarding), Textreview `ux-copy` |
+| **P7 Profi-Inhalte** | Struktur-Vergleiche (GmbH/vvGmbH) mit Disclaimer-Dialog, Aufteilung WEG, Modernisierung, Gemeinde-Karte (MapLibre), K10 | bestehende Komponenten; Karte neu | Disclaimer-Tests, Karten-A11y (Liste als Alternative) |
+| **P8 Release Web** | S-04 vollständig, S-05 Konto/Sync (optional), S-31 Export, Update-Dialog, Backup-Erinnerung, Impressum/Datenschutz, Quellen vollständig, **A11y-Audit WCAG 2.2 AA** inkl. Screenreader-Runde, Performance-Politur | – | **Usability-Test 3**, SUS ≥ 75, axe 0 |
+| **P9 Mobile** | Capacitor-Anpassungen: Safe Areas, Tastatur-Verhalten, Zurück-Geste, Haptik dezent, Store-Disclaimer, TalkBack/VoiceOver-Runden | – | Mobile Release Check, TalkBack-Stichproben |
+
+**Abhängigkeiten:** O-01 und K-04 brauchen den Datenvertrag aus P1; Karte braucht P2-Daten; O-09 braucht P4-Rechenkern (NK, Steuern); O-08 braucht P5-Bank/Anschluss; Mentor und Debrief-Archiv brauchen P6-Content. Ohne die Voraussetzung wird die Funktion **nicht angedeutet**, sondern als Leerzustand mit Phasenhinweis geführt.
+
+**Offene Punkte (zur Entscheidung):** (1) Schriftlizenz Inter/Plex final bestätigen (OFL); (2) Kontrastwerte in 4.1 im Designreview mit echten Flächen nachmessen; (3) Gender-/Inklusionsregel in 5.2 mit dem Auftraggeber abstimmen; (4) Telemetrie Opt-in ja/nein; (5) Reserve-Schwelle und Stufenschwellen in 3.6 aus Fachspezifikation 10/12 verbindlich verankern; (6) Schreibweise Plugin-Namen (`design-critique`, `accessibility-review`, `ux-copy`) beim Installieren in P0 verifizieren.
