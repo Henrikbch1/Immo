@@ -18,11 +18,11 @@ Spalten: **Wert** · Status (`B` = Sekundärquelle, `C` = unklar/widersprüchlic
 
 | Regel | Niedersachsen | NRW | Bremen |
 |---|---|---|---|
-| Grunderwerbsteuer | 5,0 % (B, V) | 6,5 % (B, V) | 5,5 % seit 01.07.2025 (V; Datum in Webrecherche nicht bestätigt) |
-| Mietpreisbremse | Nds. Mieterschutz-VO, gilt 01.01.2026–31.12.2029; **57 Gemeinden** (Datum der Neufassung 27.11. oder 03.12.2025 unklar) (B/C) | MietSchVO NRW 28.01.2025, geändert 28.10.2025; 01.03.2025–31.12.2029; **57 Gemeinden** (vorher 18) (B) | Mietenbegrenzungs-VO 18.11.2025; 01.12.2025–31.12.2029; **nur Stadt Bremen** (B, V) |
-| Kappungsgrenze 15 % | in Gebieten der Mieterschutz-VO (B) | 57 Gemeinden (B) | Stadt Bremen 15 %; Bremerhaven 20 % (V); Laufzeit unklar (C) |
-| Kündigungssperrfrist § 577a Abs. 2 BGB | 10 Jahre (VO 2022), Inseln/Sonderfälle 5 J.; Fassung 2026 offen (C); Vault: 5 J. in gelisteten Umlandgemeinden | **nicht gefunden** | **nicht gefunden** |
-| Umwandlungsgenehmigung § 250 BauGB | VO bis spätestens 31.12.2029 (C) | nicht gefunden; § 201a-Gebietsbestimmung bis 31.12.2026 (C) | keine § 250-VO (Senat 02/2026: kein Bedarf) (B) |
+| Grunderwerbsteuer | 5,0 % seit 01.01.2014 (B/C) | 6,5 % seit 01.01.2015 (A) | 5,5 % für Erwerbe ab 01.07.2025 (Gesetz 22.01.2025) (B) |
+| Mietpreisbremse | Nds. Mieterschutz-VO vom 20.12.2024 (in Kraft 01.01.2025), durch Änderungs-VO vom 03.12.2025 bis 31.12.2029 verlängert; **57 Gemeinden** (Liste in `../research/25-…`) (B). Der 27.11.2025 gehört zur separaten § 250-VO | MietSchVO NRW 28.01.2025, geändert 28.10.2025; 01.03.2025–31.12.2029; **57 Gemeinden** (vorher 18; Bad Honnef entfällt); Kappung bis 28.02.2030 (A) | Mietenbegrenzungs-VO 18.11.2025; 01.12.2025–31.12.2029; **nur Stadt Bremen** (B, V) |
+| Kappungsgrenze 15 % | in Gebieten der Mieterschutz-VO (B) | 57 Gemeinden (B) | Stadt Bremen 15 % bis 31.08.2029 (B); Bremerhaven 20 % (V) |
+| Kündigungssperrfrist § 577a Abs. 2 BGB | **5 Jahre** bis 31.12.2031 (B; „10 Jahre“ war nur die gesetzliche Höchstdauer) | **8 Jahre** in den 57 Gemeinden bis 28.02.2030 (A) | keine Verlängerung → gesetzlich 3 Jahre (C) |
+| Umwandlungsgenehmigung § 250 BauGB | § 250-VO vom 27.11.2025, 01.01.2026–31.12.2029, 57 Gemeinden (B) | keine § 250-VO (B); § 201a-VO läuft 31.12.2026 aus, Verlängerung nicht gefunden | keine § 250-VO (B); § 201a-Änderung erlassen 03/2026, befristet bis 2031 (B) |
 | Zweckentfremdung | Hannover: Satzung seit 11.07.2025 (nur frei finanziert); Göttingen nicht gefunden | Wohnraumstärkungsgesetz (WohnStG, seit 07/2021): Köln (Satzung 05/2026), Münster (2022), Bonn (2022), Düsseldorf unklar | Wohnraumschutzgesetz: > 90 Tage Ferienvermietung, Leerstand > 6 Monate (V, Stand 25.09.2026) |
 | Grundsteuermodell | **Flächen-Lage-Modell** (Äquivalenz 0,04 €/m² Boden, 0,50 €/m² Gebäude, Messzahl 0,7 Wohnen, Lagefaktor) (B, V) | Bundesmodell; differenzierte Hebesätze Wohn/Nichtwohn zulässig, aber VG Gelsenkirchen 12/2025: in Bochum/Essen/Dortmund/Gelsenkirchen unzulässig, Rechtsmittel offen (B) | Bundesmodell laut Vault/Haufe (Haus & Grund widerspricht) (C) |
 | Hebesatz Grundsteuer B | Hannover 700 **oder** 900 (C) | Düsseldorf 374, Bonn 680, Köln 475 oder 515, Dortmund ≈ 610–625, Essen 655–670 (C) | 695 oder 755 (C) |

@@ -24,3 +24,9 @@ Nicht gefragt, aber von dir bei Gelegenheit zu klären (spätere Phasen): O13 Mo
 | Q11 | Plan-Konsolidierung (Querlese-Beschlüsse in 02/03/06 einarbeiten) jetzt machen oder erst nach deiner Durchsicht? | jetzt |
 
 Die Sachentscheidungen O-1…O-19 des Querlesens stehen in `plan/10-…` §5 – bei Widerspruch bitte melden.
+
+## Nachtrag Primärprüfung (27.11.)
+
+| # | Frage | Standard |
+|---|---|---|
+| Q12 | Für die Primärprüfung NDS/Bremen fehlen noch Hosts: `www.mw.niedersachsen.de`, `www.verkuendung-niedersachsen.de`, `www.voris.niedersachsen.de`, `www.bremen.de`, `www.rathaus.bremen.de`, `www.transparenz.bremen.de`. Freischalten (ich schlage es per Umgebungs-Änderung vor, du bestätigst im Dialog)? | ja, beim nächsten Batch |
