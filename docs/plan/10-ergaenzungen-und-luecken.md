@@ -33,7 +33,7 @@ Nicht in 00–08 ausgearbeitet. Priorität: **K** = vor der genannten Phase zwin
 | G-01 | **Fokusländer-Steckbriefe** (Regeln, Daten, Quellen, Besonderheiten je Land) | E7; bisher nur Vault-Rechtsmatrix für Bremen/Umland | P2 | K | `09` §2–5 |
 | G-02 | **Kuratierte Referenzregionen** (ca. 30 Kreise/Städte mit Archetyp) | 12.588 Gebiete sind zu viel für Tests, Balancing und Lernpfad-Orte | P2/P3 | K | `09` §6 |
 | G-03 | **Objektarchetypen je Region** (Bremer Haus, Zechenhaus, Gründerzeit, 60er-Block …) | Angebotsgenerator (02 §2.3) kennt nur Objektart und Baujahr, nicht die regionale Prägung | P3 | S | `09` §7 |
-| G-04 | **Datenbedarf je historischem Szenario** (H1–H4): Zeitreihen, Regelstände, Regionen | 01 §4.2 nennt die Szenarien, nicht ihre Datenvoraussetzungen | P6 | S | `09` §9 |
+| G-04 | **Datenbedarf je historischem Szenario** (H1–H4): Zeitreihen, Regelstände, Regionen | 01 §4.2 nennt Szenarien und grobe Datenbasis, nicht Regelstände und Regionalbezug je Szenario | P6 | S | `09` §9 |
 | G-05 | **Exposé-Textbausteine / Content-Pipeline** (Makler-Sprache, „Übersetzer“-Funktion, Variantenzahl, Qualitätsprüfung) | Exposé-Texte tragen den Lerneffekt der Aufdeckung; bisher nur Struktur | P3 | S | offen (Spezifikation als erstes P3-Paket vorschlagen) |
 | G-06 | **Glossar-Inhaltsliste** (ca. 150 Begriffe, Quelle: Vault) | S-34 verlangt Vollständigkeit ohne tote Links | P3 | S | offen; Begriffsliste aus Vault-Aliasen ableiten (mechanisch, Haiku) |
 | G-07 | **Usability-Testplan** (Aufgaben, Rekrutierung, Messgrößen für Test 1–3) | R4/R5 verlassen sich darauf | P3 | S | offen |

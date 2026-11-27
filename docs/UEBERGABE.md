@@ -1,4 +1,7 @@
-# Übergabe – Stand 27.11.2026
+# Übergabe – Stand 27.11.2026 (ergänzt)
+
+> **Neu (27.11., zweite Sitzung):** E7 Fokusländer Niedersachsen/NRW/Bremen, E8 kein Gendern → `docs/plan/09-fokuslaender.md`, `docs/plan/10-ergaenzungen-und-luecken.md`, Webrecherchen `docs/research/23`, `24` (ungeprüft!), offene Fragen `docs/RUECKFRAGEN.md`. Branch dieser Sitzung: `claude/compassionate-hypatia-ty5f91`.
+
 
 > Zweck: In einem **neuen Chat** ohne Kontextverlust weitermachen und dabei Kosten sparen.
 > Einfach den Start-Prompt unten (§6) in den neuen Chat kopieren.
